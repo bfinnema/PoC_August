@@ -1,0 +1,11 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <l3vpn_pe_qos_rfs xmlns="http://example.com/l3vpn_pe_qos_rfs">
+        <name>{$name}</name>
+        <device>{$pe_device}</device>
+        <bit_rate>{$pe_bit_rate}</bit_rate>
+        <interface>
+            <interface_name>{$pe_interface_name}</interface_name>
+            <interface_number>{$pe_interface_number}</interface_number>
+        </interface>
+    </l3vpn_pe_qos_rfs>
+</config-template>

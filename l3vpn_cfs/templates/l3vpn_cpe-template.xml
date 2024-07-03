@@ -1,0 +1,18 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <l3vpn_cpe_rfs xmlns="http://example.com/l3vpn_cpe_rfs">
+        <name>{$name}</name>
+        <device>{$cpe_device}</device>
+        <as_number>{/as_number}</as_number>
+        <remote_as_number>{/customer_as_number}</remote_as_number>
+        <bgp_neighbor_address>{$pe_interface_address}</bgp_neighbor_address>
+        <loopback0_address>{$cpe_loopback0_address}</loopback0_address>
+        <loopback0_mask>{$cpe_loopback0_mask}</loopback0_mask>
+        <interface>
+            <interface_name>{$cpe_interface_name}</interface_name>
+            <interface_number>{$cpe_interface_number}</interface_number>
+            <ipv4_address>{$cpe_ipv4_address}</ipv4_address>
+            <ipv4_mask>{$cpe_ipv4_mask}</ipv4_mask>
+            <interface_description>{$cpe_interface_description}</interface_description>
+        </interface>
+    </l3vpn_cpe_rfs>
+</config-template>
