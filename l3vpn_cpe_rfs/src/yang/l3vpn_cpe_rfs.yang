@@ -35,6 +35,7 @@ module l3vpn_cpe_rfs {
         enum TwoHundredGigE;
         enum FourHundredGigE;
         enum EightHundredGigE;
+        enum xe;
       }
       mandatory true;
     }

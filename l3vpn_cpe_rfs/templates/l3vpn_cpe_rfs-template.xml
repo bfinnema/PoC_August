@@ -3,6 +3,7 @@
     <device>
       <name>{/device}</name>
       <config>
+        <!-- IOS XE section -->
         <interface xmlns="urn:ios">
           <Loopback>
             <name>0</name>
@@ -15,6 +16,7 @@
               </address>
             </ip>
           </Loopback>
+          <?if {/interface/interface_name = 'GigabitEthernet'}?>
           <GigabitEthernet>
             <name>{/interface/interface_number}</name>
             <ip>
@@ -31,6 +33,7 @@
             </ip>
             <description>{/interface/interface_description}</description>
           </GigabitEthernet>
+          <?end?>
         </interface>
         <router xmlns="urn:ios">
           <bgp>
@@ -61,6 +64,58 @@
             </address-family>
           </bgp>
         </router>
+        <!-- Section End -->
+
+        <!-- Junos Section -->
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <interfaces>
+            <interface>
+              <name>lo0</name>
+              <unit>
+                <name>0</name>
+                <family>
+                  <inet tags="replace">
+                    <address>
+                      <name>{loopback0_address}/{$LO0_IPV4_CIDR}</name>
+                    </address>
+                  </inet>
+                </family>
+              </unit>
+            </interface>
+            <interface>
+              <name>{/interface/interface_name}-{/interface/interface_number}</name>
+              <description>{/interface/interface_description}</description>
+              <unit>
+                <name>0</name>
+                <family>
+                  <inet tags="replace">
+                    <address>
+                      <name>{/interface/ipv4_address}/{$WAN_IPV4_CIDR}</name>
+                    </address>
+                  </inet>
+                </family>
+              </unit>
+            </interface>
+          </interfaces>
+          <routing-options>
+            <router-id>{loopback0_address}</router-id>
+            <autonomous-system>
+              <as-number>{as_number}</as-number>
+            </autonomous-system>
+          </routing-options>
+          <protocols>
+            <bgp>
+              <group>
+                <name>{$GROUP_NAME}</name>
+                <type>external</type>
+                <peer-as>{remote_as_number}</peer-as>
+                <neighbor>
+                  <name>{bgp_neighbor_address}</name>
+                </neighbor>
+              </group>
+            </bgp>
+          </protocols>
+        </configuration>
       </config>
     </device>
   </devices>
