@@ -32,6 +32,7 @@
           </vrf-list>
         </vrf>
         <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if {/interface/interface_name = 'TenGigE'}?>
           <TenGigE>
             <id>{/interface/interface_number}</id>
             <vrf>{/vrf_name}</vrf>
@@ -43,6 +44,20 @@
             </ipv4>
             <description>{/interface/interface_description}</description>
           </TenGigE>
+          <?end?>
+          <?if {/interface/interface_name = 'GigabitEthernet'}?>
+          <GigabitEthernet>
+            <id>{/interface/interface_number}</id>
+            <vrf>{/vrf_name}</vrf>
+            <ipv4>
+              <address>
+                <ip>{/interface/ipv4_address}</ip>
+                <mask>{/interface/ipv4_mask}</mask>
+              </address>
+            </ipv4>
+            <description>{/interface/interface_description}</description>
+          </GigabitEthernet>
+          <?end?>
         </interface>
         <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
           <name>PASS-ALL</name>
