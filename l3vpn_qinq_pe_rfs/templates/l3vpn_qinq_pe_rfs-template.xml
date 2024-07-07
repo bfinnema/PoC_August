@@ -1,0 +1,238 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+
+        <!-- IOS-XR CLI NED section -->
+        <vrf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf-list>
+            <name>{/vrf_name}</name>
+            <rd>{/remote_as_number}:1</rd>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <import>
+                    <route-target>
+                      <address-list>
+                        <name>{/remote_as_number}:1</name>
+                      </address-list>
+                    </route-target>
+                  </import>
+                  <export>
+                    <route-target>
+                      <address-list>
+                        <name>{/remote_as_number}:1</name>
+                      </address-list>
+                    </route-target>
+                  </export>
+                </unicast>
+              </ipv4>
+            </address-family>
+          </vrf-list>
+        </vrf>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+
+          <?if {/interface/interface_name = 'GigabitEthernet'}?>
+          <GigabitEthernet>
+            <id>{/interface/interface_number}</id>
+            <description>{/interface/interface_description}</description>
+          </GigabitEthernet>
+          <GigabitEthernet-subinterface>
+            <GigabitEthernet>
+              <id>{/interface/interface_number}.{/ovlan}</id>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{/ovlan}</vlan-id>
+                  <second-dot1q>{/ivlan}</second-dot1q>
+                </dot1q>
+              </encapsulation>
+              <vrf>{/vrf_name}</vrf>
+              <ipv4>
+                <address>
+                  <ip>{/interface/ipv4_address}</ip>
+                  <mask>{/interface/ipv4_mask}</mask>
+                </address>
+              </ipv4>
+            </GigabitEthernet>
+          </GigabitEthernet-subinterface>
+          <?end?>
+
+          <?if {/interface/interface_name = 'TenGigE'}?>
+          <TenGigE>
+            <id>{/interface/interface_number}</id>
+            <description>{/interface/interface_description}</description>
+          </TenGigE>
+          <TenGigE-subinterface>
+            <TenGigE>
+              <id>{/interface/interface_number}.{/ovlan}</id>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{/ovlan}</vlan-id>
+                  <second-dot1q>{/ivlan}</second-dot1q>
+                </dot1q>
+              </encapsulation>
+              <vrf>{/vrf_name}</vrf>
+              <ipv4>
+                <address>
+                  <ip>{/interface/ipv4_address}</ip>
+                  <mask>{/interface/ipv4_mask}</mask>
+                </address>
+              </ipv4>
+            </TenGigE>
+          </TenGigE-subinterface>
+          <?end?>
+
+        </interface>
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>PASS-ALL</name>
+          <value>pass</value>
+        </route-policy>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bgp>
+            <bgp-no-instance>
+              <id>{/as_number}</id>
+              <vrf>
+                <name>{/vrf_name}</name>
+                <address-family>
+                  <ipv4>
+                    <unicast>
+                      <redistribute>
+                        <connected/>
+                      </redistribute>
+                    </unicast>
+                  </ipv4>
+                </address-family>
+                <neighbor>
+                  <id>{/neighbor_ip_address}</id>
+                  <remote-as>{/remote_as_number}</remote-as>
+                  <address-family>
+                    <ipv4>
+                      <unicast>
+                        <route-policy>
+                          <direction>in</direction>
+                          <name>PASS-ALL</name>
+                        </route-policy>
+                        <route-policy>
+                          <direction>out</direction>
+                          <name>PASS-ALL</name>
+                        </route-policy>
+                      </unicast>
+                    </ipv4>
+                  </address-family>
+                </neighbor>
+              </vrf>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+        <!-- End of section -->
+        
+        <!-- IOS-XR NETCONF NED section -->
+        <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
+          <interface>
+            <interface-name>{/interface/interface_name}{/interface/interface_number}.{/ovlan}</interface-name>
+            <description>{/interface/interface_description}</description>
+            <ipv4>
+              <addresses xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg">
+                <address>
+                  <address>{/interface/ipv4_address}</address>
+                  <netmask>{/interface/ipv4_mask}</netmask>
+                </address>
+              </addresses>
+            </ipv4>
+            <vrf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-vrf-cfg">{/vrf_name}</vrf>
+            <encapsulation xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg">
+              <dot1q>
+                <vlan-id>{/ovlan}</vlan-id>
+                <second-dot1q>{/ivlan}</second-dot1q>
+              </dot1q>
+            </encapsulation>
+          </interface>
+        </interfaces>
+        <routing-policy xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-route-policy-cfg">
+          <route-policies>
+            <route-policy>
+              <route-policy-name>PASS_ALL</route-policy-name>
+              <rpl-route-policy>pass</rpl-route-policy>
+            </route-policy>
+          </route-policies>
+        </routing-policy>
+        <router xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+          <bgp>
+            <instances>
+              <instance>
+                <instance-name>{/as_number}</instance-name>
+                <as>
+                  <as-number>{/as_number}</as-number>
+                  <vrfs>
+                    <vrf>
+                      <vrf-name>{/vrf_name}</vrf-name>
+                      <address-families>
+                        <address-family>
+                          <af-name>ipv4-unicast</af-name>
+                          <redistribute>
+                            <connected/>
+                          </redistribute>
+                        </address-family>
+                      </address-families>
+                      <neighbors>
+                        <neighbor>
+                          <neighbor-address>{/neighbor_ip_address}</neighbor-address>
+                          <address-families>
+                            <address-family>
+                              <af-name>ipv4-unicast</af-name>
+                              <route-policy>
+                                <in>PASS_ALL</in>
+                                <out>PASS_ALL</out>
+                              </route-policy>
+                            </address-family>
+                          </address-families>
+                          <remote-as>{/remote_as_number}</remote-as>
+                        </neighbor>
+                      </neighbors>
+                    </vrf>
+                  </vrfs>
+                </as>
+              </instance>
+            </instances>
+          </bgp>
+        </router>
+        <vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-vrf-cfg">
+          <vrf>
+            <vrf-name>{/vrf_name}</vrf-name>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <import xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+                    <route-target>
+                      <two-byte-as-rts>
+                        <two-byte-as-rt>
+                          <as-number>{/remote_as_number}</as-number>
+                          <index>1</index>
+                          <stitching>false</stitching>
+                        </two-byte-as-rt>
+                      </two-byte-as-rts>
+                    </route-target>
+                  </import>
+                  <export xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+                    <route-target>
+                      <two-byte-as-rts>
+                        <two-byte-as-rt>
+                          <as-number>{/remote_as_number}</as-number>
+                          <index>1</index>
+                          <stitching>false</stitching>
+                        </two-byte-as-rt>
+                      </two-byte-as-rts>
+                    </route-target>
+                  </export>
+                </unicast>
+              </ipv4>
+            </address-family>
+          </vrf>
+        </vrfs>
+        <!-- End of section -->
+
+      </config>
+    </device>
+  </devices>
+</config-template>

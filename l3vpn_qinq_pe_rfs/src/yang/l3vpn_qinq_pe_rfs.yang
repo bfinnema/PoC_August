@@ -1,0 +1,121 @@
+module l3vpn_qinq_pe_rfs {
+
+  namespace "http://example.com/l3vpn_qinq_pe_rfs";
+  prefix l3vpn_qinq_pe_rfs;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "L3VPN configuration for PE router. Includes interface to CPE with QinQ VLAN configuration";
+
+  revision 2024-07-06 {
+    description
+      "Initial revision.";
+  }
+
+  grouping interface_grouping {
+    leaf interface_name {
+      tailf:info "Interface name. For example TenGigE.";
+      type enumeration {
+        enum FastEthernet;
+        enum GigabitEthernet;
+        enum TenGigE;
+        enum TwentyFiveGigE;
+        enum FortyGigE;
+        enum FiftyGigE;
+        enum HundredGigE;
+        enum TwoHundredGigE;
+        enum FourHundredGigE;
+        enum EightHundredGigE;
+        enum xe;
+      }
+      mandatory true;
+    }
+    leaf interface_number {
+      tailf:info "Interface number. For example 0 or 1/0";
+      type string {
+        pattern "[0-9]{1,2}(/[0-9]{1,2}){1,4}";
+      }
+      mandatory true;
+    }
+    leaf ipv4_address {
+      tailf:info "Interface IPv4 address.";
+      type inet:ipv4-address;
+    }
+    leaf ipv4_mask {
+      tailf:info "Interface IPv4 mask.";
+      type inet:ipv4-address;
+    }
+    leaf interface_description {
+      tailf:info "Interface description.";
+      type string;
+    }
+  }
+
+  list l3vpn_qinq_pe_rfs {
+    description "This is an RFS skeleton service";
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint l3vpn_qinq_pe_rfs-servicepoint;
+
+    leaf device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf vrf_name {
+      tailf:info "VRF name";
+      type string;
+      mandatory true;
+    }
+
+    leaf as_number {
+      tailf:info "Autonomous System number eg 65000";
+      type uint16;
+      mandatory true;
+    }
+
+    leaf remote_as_number {
+      tailf:info "Remote Autonomous System number eg 65002";
+      type uint16;
+      mandatory true;
+    }
+
+    leaf neighbor_ip_address {
+      tailf:info "Address of the BGP peer in the VRF";
+      type inet:ipv4-address;
+    }
+
+    leaf ovlan {
+      tailf:info "Outer VLAN eg 10";
+      type uint16;
+      mandatory true;
+    }
+
+    leaf ivlan {
+      tailf:info "Inner VLAN eg 20";
+      type uint16;
+      mandatory true;
+    }
+
+    container interface {
+      uses interface_grouping;
+    }
+  }
+}
