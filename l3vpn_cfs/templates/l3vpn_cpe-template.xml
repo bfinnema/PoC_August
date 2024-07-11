@@ -2,8 +2,8 @@
     <l3vpn_cpe_rfs xmlns="http://example.com/l3vpn_cpe_rfs">
         <name>{$name}</name>
         <device>{$cpe_device}</device>
-        <as_number>{/as_number}</as_number>
-        <remote_as_number>{/customer_as_number}</remote_as_number>
+        <as_number>{/customer_as_number}</as_number>
+        <remote_as_number>{/as_number}</remote_as_number>
         <bgp_neighbor_address>{$pe_interface_address}</bgp_neighbor_address>
         <loopback0_address>{$cpe_loopback0_address}</loopback0_address>
         <loopback0_mask>{$cpe_loopback0_mask}</loopback0_mask>
