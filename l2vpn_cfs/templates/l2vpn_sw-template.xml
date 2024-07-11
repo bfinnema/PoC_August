@@ -1,0 +1,19 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <l2vpn_sw_rfs xmlns="http://example.com/l2vpn_sw_rfs">
+        <name>{$name}</name>
+        <device>{$sw_device}</device>
+        <ovlan>{$ovlan}</ovlan>
+        <ivlan>{$ivlan}</ivlan>
+        <vlan_name>{$vlan_name}</vlan_name>
+        <pe_interface>
+            <interface_name>{$sw_pe_interface_name}</interface_name>
+            <interface_number>{$sw_pe_interface_number}</interface_number>
+            <interface_description>{$sw_pe_interface_description}</interface_description>
+        </pe_interface>
+        <cpe_interface>
+            <interface_name>{$sw_cpe_interface_name}</interface_name>
+            <interface_number>{$sw_cpe_interface_number}</interface_number>
+            <interface_description>{$sw_cpe_interface_description}</interface_description>
+        </cpe_interface>
+    </l2vpn_sw_rfs>
+</config-template>

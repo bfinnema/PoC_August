@@ -1,0 +1,19 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <l3vpn_qinq_pe_rfs xmlns="http://example.com/l3vpn_qinq_pe_rfs">
+        <name>{$name}</name>
+        <device>{$pe_device}</device>
+        <vrf_name>{/vrf_name}</vrf_name>
+        <as_number>{/as_number}</as_number>
+        <remote_as_number>{/customer_as_number}</remote_as_number>
+        <neighbor_ip_address>{$cpe_interface_address}</neighbor_ip_address>
+        <ovlan>{$ovlan}</ovlan>
+        <ivlan>{$ivlan}</ivlan>
+        <interface>
+            <interface_name>{$pe_interface_name}</interface_name>
+            <interface_number>{$pe_interface_number}</interface_number>
+            <ipv4_address>{$pe_ipv4_address}</ipv4_address>
+            <ipv4_mask>{$pe_ipv4_mask}</ipv4_mask>
+            <interface_description>{$pe_interface_description}</interface_description>
+        </interface>
+    </l3vpn_qinq_pe_rfs>
+</config-template>

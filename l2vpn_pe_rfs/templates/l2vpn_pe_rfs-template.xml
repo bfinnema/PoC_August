@@ -1,0 +1,150 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+        <!-- IOS-XR CLI NED section -->
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if {starts-with(/interface/interface_name,'TenGig')}?>
+          <TenGigE-subinterface>
+            <TenGigE>
+              <id>{/interface/interface_number}.{/ovlan}</id>
+              <description>{/interface/interface_description}</description>
+              <mode>l2transport</mode>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{/ovlan}</vlan-id>
+                  <second-dot1q>{/ivlan}</second-dot1q>
+                </dot1q>
+              </encapsulation>
+              <rewrite>
+                <ingress>
+                  <tag>
+                    <pop>2</pop>
+                    <mode>symmetric</mode>
+                  </tag>
+                </ingress>
+              </rewrite>
+            </TenGigE>
+          </TenGigE-subinterface>
+          <?end?>
+          <?if {starts-with(/interface/interface_name,'Gigabit')}?>
+          <GigabitEthernet-subinterface>
+            <GigabitEthernet>
+              <id>{/interface/interface_number}.{/ovlan}</id>
+              <mode>l2transport</mode>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{/ovlan}</vlan-id>
+                  <second-dot1q>{/ivlan}</second-dot1q>
+                </dot1q>
+              </encapsulation>
+              <rewrite>
+                <ingress>
+                  <tag>
+                    <pop>2</pop>
+                    <mode>symmetric</mode>
+                  </tag>
+                </ingress>
+              </rewrite>
+            </GigabitEthernet>
+          </GigabitEthernet-subinterface>
+          <?end?>
+          <BVI>
+            <id>{/ovlan}</id>
+            <ipv4>
+              <address>
+                <ip>{/ovlan}.{/ovlan}.{/ovlan}.1</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </BVI>
+        </interface>
+        <l2vpn xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bridge>
+            <group>
+              <group-name>{/bridge_group_name}</group-name>
+              <bridge-domain>
+                <bridge-domain-name>{/bridge_group_name}</bridge-domain-name>
+                  <interface>
+                    <name>{/interface/interface_name}{/interface/interface_number}.{/ovlan}</name>
+                  </interface>
+                <routed>
+                  <interface>
+                    <name>BVI{/ovlan}</name>
+                  </interface>
+                </routed>
+              </bridge-domain>
+            </group>
+          </bridge>
+        </l2vpn>
+        <!-- End of section -->
+        
+        <!-- IOS-XR NETCONF NED section -->
+        <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
+          <interface>
+            <interface-name>{/interface/interface_name}{/interface/interface_number}.{/ovlan}</interface-name>
+            <sub-interface-type>
+              <l2transport/>
+            </sub-interface-type>
+            <description>{/interface/interface_description}</description>
+            <l2transport-encapsulation xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg">
+              <dot1q>
+                <vlan-id>{/ovlan}</vlan-id>
+                <second-dot1q>{/ivlan}</second-dot1q>
+              </dot1q>
+            </l2transport-encapsulation>
+            <rewrite xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg">
+              <ingress>
+                <tag>
+                  <pop>
+                    <two/>
+                  </pop>
+                </tag>
+              </ingress>
+            </rewrite>
+          </interface>
+          <interface>
+            <interface-name>BVI{/ovlan}</interface-name>
+            <ipv4>
+              <addresses xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg">
+                <address>
+                  <address>{/ovlan}.{/ovlan}.{/ovlan}.1</address>
+                  <netmask>255.255.255.0</netmask>
+                </address>
+              </addresses>
+            </ipv4>
+          </interface>
+        </interfaces>
+
+        <l2vpn xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2vpn-cfg">
+          <bridge>
+            <groups>
+              <group>
+                <group-name>{/bridge_group_name}</group-name>
+                <bridge-domains>
+                  <bridge-domain>
+                    <bridge-domain-name>{/bridge_group_name}</bridge-domain-name>
+                    <interfaces>
+                      <interface>
+                        <interface-name>{/interface/interface_name}{/interface/interface_number}.{/ovlan}</interface-name>
+                      </interface>
+                    </interfaces>
+                    <routed>
+                      <interface>
+                        <interface-name>BVI{/ovlan}</interface-name>
+                      </interface>
+                    </routed>
+                  </bridge-domain>
+                </bridge-domains>
+              </group>
+
+            </groups>
+          </bridge>
+        </l2vpn>
+        <!-- End of section -->
+        
+      </config>
+    </device>
+  </devices>
+</config-template>

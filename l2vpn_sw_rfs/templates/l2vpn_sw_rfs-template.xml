@@ -1,0 +1,85 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+        <vlan xmlns="urn:ios">
+          <vlan-list>
+            <id>{/ovlan}</id>
+            <name>{/vlan_name}</name>
+          </vlan-list>
+        </vlan>
+        <interface xmlns="urn:ios">
+          <?if {starts-with(/cpe_interface/interface_name,'Gigabit')}?>
+          <GigabitEthernet>
+            <name>{/cpe_interface/interface_number}</name>
+            <description>{/cpe_interface/interface_description}</description>
+            <switchport>
+              <mode>
+                <dot1q-tunnel/>
+              </mode>
+              <access>
+                <vlan>{/ovlan}</vlan>
+              </access>
+            </switchport>
+            <!-- <ip>
+              <no-address>
+                <address xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"
+                        nc:operation="delete"/>
+              </no-address>
+            </ip> -->
+          </GigabitEthernet>
+          <?end?>
+          <?if {starts-with(/cpe_interface/interface_name,'TenGig')}?>
+          <TenGigabitEthernet>
+            <name>{/cpe_interface/interface_number}</name>
+            <description>{/cpe_interface/interface_description}</description>
+            <switchport>
+              <mode>
+                <dot1q-tunnel/>
+              </mode>
+              <access>
+                <vlan>{/ovlan}</vlan>
+              </access>
+            </switchport>
+            <!-- <ip>
+              <no-address>
+                <address xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"
+                        nc:operation="delete"/>
+              </no-address>
+            </ip> -->
+          </TenGigabitEthernet>
+          <?end?>
+          <?if {starts-with(/pe_interface/interface_name,'Gigabit')}?>
+          <GigabitEthernet>
+            <name>{/pe_interface/interface_number}</name>
+            <description>{/pe_interface/interface_description}</description>
+            <switchport>
+              <mode>
+                <dot1q-tunnel/>
+              </mode>
+              <access>
+                <vlan>{/ovlan}</vlan>
+              </access>
+            </switchport>
+          </GigabitEthernet>
+          <?end?>
+          <?if {starts-with(/pe_interface/interface_name,'TenGig')}?>
+          <TenGigabitEthernet>
+            <name>{/pe_interface/interface_number}</name>
+            <description>{/pe_interface/interface_description}</description>
+            <switchport>
+              <mode>
+                <dot1q-tunnel/>
+              </mode>
+              <access>
+                <vlan>{/ovlan}</vlan>
+              </access>
+            </switchport>
+          </TenGigabitEthernet>
+          <?end?>
+        </interface>
+      </config>
+    </device>
+  </devices>
+</config-template>

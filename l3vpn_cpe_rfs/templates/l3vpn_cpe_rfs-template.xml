@@ -16,7 +16,7 @@
               </address>
             </ip>
           </Loopback>
-          <?if {/interface/interface_name = 'GigabitEthernet'}?>
+          <?if {starts-with(/interface/interface_name,'Gigabit')}?>
           <GigabitEthernet>
             <name>{/interface/interface_number}</name>
             <ip>

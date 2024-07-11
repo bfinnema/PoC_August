@@ -1,0 +1,94 @@
+module l2vpn_pe_rfs {
+
+  namespace "http://example.com/l2vpn_pe_rfs";
+  prefix l2vpn_pe_rfs;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "The PE part of the L2VPN service with QinQ to the switched network between PE and CPE";
+
+  revision 2024-07-10 {
+    description
+      "Initial revision.";
+  }
+
+  grouping interface_grouping {
+    leaf interface_name {
+      tailf:info "Interface name. For example TenGigE.";
+      type enumeration {
+        enum FastEthernet;
+        enum GigabitEthernet;
+        enum TenGigE;
+        enum TwentyFiveGigE;
+        enum FortyGigE;
+        enum FiftyGigE;
+        enum HundredGigE;
+        enum TwoHundredGigE;
+        enum FourHundredGigE;
+        enum EightHundredGigE;
+        enum xe;
+      }
+    }
+    leaf interface_number {
+      tailf:info "Interface number. For example 0 or 1/0";
+      type string {
+        pattern "[0-9]{1,2}(/[0-9]{1,2}){1,4}";
+      }
+    }
+    leaf interface_description {
+      tailf:info "Interface description.";
+      type string;
+    }
+  }
+
+  list l2vpn_pe_rfs {
+    description "This is an RFS skeleton service";
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint l2vpn_pe_rfs-servicepoint;
+
+    leaf device {
+      tailf:info "The PE device";
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf ovlan {
+      tailf:info "Outer VLAN eg 10";
+      type uint16;
+      mandatory true;
+    }
+
+    leaf ivlan {
+      tailf:info "Inner VLAN eg 20";
+      type uint16;
+      mandatory true;
+    }
+
+    leaf bridge_group_name {
+      tailf:info "Name of the L2VPN bridge group";
+      type string;
+    }
+
+    container interface {
+      uses interface_grouping;
+    }
+  }
+}
