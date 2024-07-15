@@ -3,6 +3,88 @@
     <device>
       <name>{/device}</name>
       <config>
+        <!-- IOS-XE NETCONF NED section -->
+        <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+          <interface>
+            <BDI>
+              <name>{/ivlan}</name>
+              <description>{/interface/interface_description}</description>
+              <ip>
+                <address>
+                  <primary>
+                    <address>{$vlan_octet}.{$vlan_octet}.{$vlan_octet}.2</address>
+                    <mask>255.255.255.0</mask>
+                  </primary>
+                </address>
+              </ip>
+            </BDI>
+            <?if {starts-with(/interface/interface_name,'TenGig')}?>
+            <TenGigabitEthernet>
+              <name>{/interface/interface_number}</name>
+              <service xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ethernet">
+                <instance>
+                  <id>{/ovlan}</id>
+                  <ethernet/>
+                  <description>{/interface/interface_description}</description>
+                  <encapsulation>
+                    <dot1q>
+                      <id>{/ovlan}</id>
+                      <second-dot1q>{/ivlan}</second-dot1q>
+                    </dot1q>
+                  </encapsulation>
+                  <rewrite>
+                    <ingress>
+                      <tag>
+                        <pop>
+                          <way>2</way>
+                          <mode>symmetric</mode>
+                        </pop>
+                      </tag>
+                    </ingress>
+                  </rewrite>
+                  <bridge-domain>
+                    <bridge-id>{/ivlan}</bridge-id>
+                  </bridge-domain>
+                </instance>
+              </service>
+            </TenGigabitEthernet>
+            <?end?>
+            <?if {starts-with(/interface/interface_name,'Gigabit')}?>
+            <GigabitEthernet>
+              <name>{/interface/interface_number}</name>
+              <service xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ethernet">
+                <instance>
+                  <id>{/ovlan}</id>
+                  <ethernet/>
+                  <description>{/interface/interface_description}</description>
+                  <encapsulation>
+                    <dot1q>
+                      <id>{/ovlan}</id>
+                      <second-dot1q>{/ivlan}</second-dot1q>
+                    </dot1q>
+                  </encapsulation>
+                  <rewrite>
+                    <ingress>
+                      <tag>
+                        <pop>
+                          <way>2</way>
+                          <mode>symmetric</mode>
+                        </pop>
+                      </tag>
+                    </ingress>
+                  </rewrite>
+                  <bridge-domain>
+                    <bridge-id>{/ivlan}</bridge-id>
+                  </bridge-domain>
+                </instance>
+              </service>
+            </GigabitEthernet>
+            <?end?>
+          </interface>
+        </native>
+        <!-- End of section -->
+
+        <!-- IOS-XE CLI NED section -->
         <interface xmlns="urn:ios">
           <?if {starts-with(/interface/interface_name,'TenGig')}?>
           <TenGigabitEthernet>
@@ -68,13 +150,15 @@
             <ip>
               <address>
                 <primary>
-                  <address>{/ovlan}.{/ovlan}.{/ovlan}.2</address>
+                  <address>{$vlan_octet}.{$vlan_octet}.{$vlan_octet}.2</address>
                   <mask>255.255.255.0</mask>
                 </primary>
               </address>
             </ip>
           </BDI>
         </interface>
+        <!-- End of section -->
+
       </config>
     </device>
   </devices>

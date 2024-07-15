@@ -3,15 +3,78 @@
     <device>
       <name>{/device}</name>
       <config>
-        <!-- IOS XE section -->
+        <!-- IOS-XE NETCONF NED section -->
+        <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+          <interface>
+            <?if {starts-with(/interface/interface_name,'Gigabit')}?>
+            <GigabitEthernet>
+              <name>{/interface/interface_number}</name>
+              <description>{/interface/interface_description}</description>
+              <ip>
+                <address>
+                  <primary>
+                    <address>{/interface/ipv4_address}</address>
+                    <mask>{/interface/ipv4_mask}</mask>
+                  </primary>
+                </address>
+              </ip>
+            </GigabitEthernet>
+            <?end?>
+            <Loopback>
+              <name>0</name>
+              <ip>
+                <address>
+                  <primary>
+                    <address>{/loopback0_address}</address>
+                    <mask>{/loopback0_mask}</mask>
+                  </primary>
+                </address>
+              </ip>
+            </Loopback>
+          </interface>
+          <router>
+            <bgp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-bgp">
+              <id>{/as_number}</id>
+              <bgp>
+                <log-neighbor-changes>true</log-neighbor-changes>
+              </bgp>
+              <neighbor>
+                <id>{/bgp_neighbor_address}</id>
+                <remote-as>{/remote_as_number}</remote-as>
+              </neighbor>
+              <address-family>
+                <no-vrf>
+                  <ipv4>
+                    <af-name>unicast</af-name>
+                    <ipv4-unicast>
+                      <neighbor>
+                        <id>{/bgp_neighbor_address}</id>
+                        <activate/>
+                      </neighbor>
+                      <network>
+                        <with-mask>
+                          <number>{/loopback0_address}</number>
+                          <mask>{/loopback0_mask}</mask>
+                        </with-mask>
+                      </network>
+                    </ipv4-unicast>
+                  </ipv4>
+                </no-vrf>
+              </address-family>
+            </bgp>
+          </router>
+        </native>
+        <!-- Section End -->
+
+        <!-- IOS-XE CLI NED section -->
         <interface xmlns="urn:ios">
           <Loopback>
             <name>0</name>
             <ip>
               <address>
                 <primary>
-                  <address>{loopback0_address}</address>
-                  <mask>{loopback0_mask}</mask>
+                  <address>{/loopback0_address}</address>
+                  <mask>{/loopback0_mask}</mask>
                 </primary>
               </address>
             </ip>
@@ -37,13 +100,13 @@
         </interface>
         <router xmlns="urn:ios">
           <bgp>
-            <as-no>{as_number}</as-no>
+            <as-no>{/as_number}</as-no>
             <bgp>
               <log-neighbor-changes>true</log-neighbor-changes>
             </bgp>
             <neighbor>
-              <id>{bgp_neighbor_address}</id>
-              <remote-as>{remote_as_number}</remote-as>
+              <id>{/bgp_neighbor_address}</id>
+              <remote-as>{/remote_as_number}</remote-as>
             </neighbor>
             <address-family>
               <ipv4>
@@ -53,11 +116,11 @@
                   <mask>255.255.0.0</mask>
                 </network> -->
                 <network>
-                  <number>{loopback0_address}</number>
-                  <mask>{loopback0_mask}</mask>
+                  <number>{/loopback0_address}</number>
+                  <mask>{/loopback0_mask}</mask>
                 </network>
                 <neighbor>
-                  <id>{bgp_neighbor_address}</id>
+                  <id>{/bgp_neighbor_address}</id>
                   <activate/>
                 </neighbor>
               </ipv4>
@@ -76,7 +139,7 @@
                 <family>
                   <inet tags="replace">
                     <address>
-                      <name>{loopback0_address}/{$LO0_IPV4_CIDR}</name>
+                      <name>{/loopback0_address}/{$LO0_IPV4_CIDR}</name>
                     </address>
                   </inet>
                 </family>
@@ -98,9 +161,9 @@
             </interface>
           </interfaces>
           <routing-options>
-            <router-id>{loopback0_address}</router-id>
+            <router-id>{/loopback0_address}</router-id>
             <autonomous-system>
-              <as-number>{as_number}</as-number>
+              <as-number>{/as_number}</as-number>
             </autonomous-system>
           </routing-options>
           <protocols>
@@ -108,9 +171,9 @@
               <group>
                 <name>{$GROUP_NAME}</name>
                 <type>external</type>
-                <peer-as>{remote_as_number}</peer-as>
+                <peer-as>{/remote_as_number}</peer-as>
                 <neighbor>
-                  <name>{bgp_neighbor_address}</name>
+                  <name>{/bgp_neighbor_address}</name>
                 </neighbor>
               </group>
             </bgp>

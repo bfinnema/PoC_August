@@ -1,0 +1,121 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/pe_device}</name>
+      <config>
+        <!-- IOS-XR NETCONF NED section -->
+        <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
+          <interface>
+            <interface-name>{/pe_interface/interface_name}{/pe_interface/interface_number}.{/vlan_id}</interface-name>
+            <ipv4>
+              <addresses xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg">
+                <address>
+                  <address>{$vlan_octet}.{$vlan_octet}.{$vlan_octet}.1</address>
+                  <netmask>255.255.255.0</netmask>
+                </address>
+              </addresses>
+            </ipv4>
+            <description>{$pe_interface_description}</description>
+            <encapsulation xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg">
+              <dot1q>
+                <vlan-id>{/vlan_id}</vlan-id>
+              </dot1q>
+            </encapsulation>
+          </interface>
+        </interfaces>
+        <routing-policy xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-route-policy-cfg">
+          <route-policies>
+            <route-policy>
+              <route-policy-name>pass</route-policy-name>
+              <rpl-route-policy>route-policy pass
+                pass
+              end-policy
+              </rpl-route-policy>
+            </route-policy>
+          </route-policies>
+        </routing-policy>
+        <router xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+          <bgp>
+            <as>
+              <as-number>{/as_number}</as-number>
+              <neighbors>
+                <neighbor>
+                  <neighbor-address>{$vlan_octet}.{$vlan_octet}.{$vlan_octet}.2</neighbor-address>
+                  <address-families>
+                    <address-family>
+                      <af-name>ipv4-unicast</af-name>
+                      <route-policy>
+                        <in>pass</in>
+                        <out>pass</out>
+                      </route-policy>
+                    </address-family>
+                  </address-families>
+                  <remote-as>{/customer_as}</remote-as>
+                  <description>{$bgp_neighbor_description}</description>
+                </neighbor>
+              </neighbors>
+            </as>
+          </bgp>
+        </router>
+        <!-- End of section -->
+
+        <!-- IOS-XR CLI NED section -->
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>PASS-ALL</name>
+          <value>pass</value>
+        </route-policy>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if {starts-with(/pe_interface/interface_name,'Gigabit')}?>
+          <GigabitEthernet-subinterface>
+            <GigabitEthernet>
+              <id>{/pe_interface/interface_number}.{/vlan_id}</id>
+              <description>{$pe_interface_description}</description>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{/vlan_id}</vlan-id>
+                </dot1q>
+              </encapsulation>
+              <ipv4>
+                <address>
+                  <ip>{$vlan_octet}.{$vlan_octet}.{$vlan_octet}.1</ip>
+                  <mask>255.255.255.0</mask>
+                </address>
+              </ipv4>
+            </GigabitEthernet>
+          </GigabitEthernet-subinterface>
+          <?end?>
+        </interface>
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>pass</name>
+          <value>pass</value>
+        </route-policy>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bgp>
+            <bgp-no-instance>
+              <id>{/as_number}</id>
+              <neighbor>
+                <id>{$vlan_octet}.{$vlan_octet}.{$vlan_octet}.2</id>
+                <remote-as>{/customer_as}</remote-as>
+                <description>{$bgp_neighbor_description}</description>
+                <address-family>
+                  <ipv4>
+                    <unicast>
+                      <route-policy>
+                        <direction>in</direction>
+                        <name>pass</name>
+                      </route-policy>
+                      <route-policy>
+                        <direction>out</direction>
+                        <name>pass</name>
+                      </route-policy>
+                    </unicast>
+                  </ipv4>
+                </address-family>
+              </neighbor>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>
