@@ -25,7 +25,7 @@ class ServiceCallbacks(Service):
         for endpoint in service.endpoint:
             # PE part
             # Get an IP address from Netbox for the PE VPN interface
-            api_url="https://10.101.180.45/api/ipam/prefixes/1/available-ips/"
+            api_url="https://10.101.180.45:8000/api/ipam/prefixes/1/available-ips/"
             response=requests.post(api_url, headers=headers, json=body, verify=False)
             self.log.info('Netbox response, IP address reservation: ', response.json())
             ipv4_cidr = response.json()["address"]
@@ -38,7 +38,7 @@ class ServiceCallbacks(Service):
             vars.add('pe_ipv4_mask', ipv4_mask)
 
             # Get an Outer VLAN from Netbox. The VLAN group for outer VLAN's is #2.
-            api_url="https://10.101.180.45/api/ipam/vlan-groups/2/available-vlans/"
+            api_url="https://10.101.180.45:8000/api/ipam/vlan-groups/2/available-vlans/"
             ovlan_name = "L3VPN-Outer-VLAN-"+str(endpoint.pe_device)+"-"+str(endpoint.id)
             body = {"name": ovlan_name}
             response=requests.post(api_url, headers=headers, json=body, verify=False)
@@ -48,7 +48,7 @@ class ServiceCallbacks(Service):
             vars.add('ovlan', ovlan_id)
 
             # Get an Inner VLAN from Netbox. The VLAN group for inner VLAN's is #3.
-            api_url="https://10.101.180.45/api/ipam/vlan-groups/3/available-vlans/"
+            api_url="https://10.101.180.45:8000/api/ipam/vlan-groups/3/available-vlans/"
             ivlan_name = "L3VPN-Inner-VLAN-"+str(endpoint.pe_device)+"-"+str(endpoint.id)
             body = {"name": ivlan_name}
             response=requests.post(api_url, headers=headers, json=body, verify=False)

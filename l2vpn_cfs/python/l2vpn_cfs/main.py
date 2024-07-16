@@ -18,7 +18,7 @@ class ServiceCallbacks(Service):
         for endpoint in service.endpoint:
 
             # Get an Outer VLAN from Netbox. The VLAN group for outer VLAN's is #2.
-            api_url="https://10.101.180.45/api/ipam/vlan-groups/2/available-vlans/"
+            api_url="https://10.101.180.45:8000/api/ipam/vlan-groups/2/available-vlans/"
             ovlan_name = "L2VPN-Outer-VLAN-"+str(endpoint.pe_device)+"-"+str(endpoint.id)
             body = {"name": ovlan_name}
             try:
@@ -35,7 +35,7 @@ class ServiceCallbacks(Service):
             vars.add('ovlan', ovlan_id)
 
             # Get an Inner VLAN from Netbox. The VLAN group for inner VLAN's is #3.
-            api_url="https://10.101.180.45/api/ipam/vlan-groups/3/available-vlans/"
+            api_url="https://10.101.180.45:8000/api/ipam/vlan-groups/3/available-vlans/"
             ivlan_name = "L2VPN-Inner-VLAN-"+str(endpoint.pe_device)+"-"+str(endpoint.id)
             body = {"name": ivlan_name}
             try:

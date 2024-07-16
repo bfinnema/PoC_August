@@ -270,6 +270,147 @@
         </configuration>
         <!-- End of section -->
 
+        <!-- IOS-XE CLI NED section -->
+        <vrf xmlns="urn:ios">
+          <definition>
+            <name>{/vrf_name}</name>
+            <rd>{/remote_as_number}:1</rd>
+            <address-family>
+              <ipv4>
+                <route-target>
+                  <export>
+                    <asn-ip>{/remote_as_number}:1</asn-ip>
+                  </export>
+                  <import>
+                    <asn-ip>{/remote_as_number}:1</asn-ip>
+                  </import>
+                </route-target>
+              </ipv4>
+            </address-family>
+          </definition>
+        </vrf>
+        <interface xmlns="urn:ios">
+          <GigabitEthernet>
+            <name>{/interface/interface_number}</name>
+            <description>{/interface/interface_description}</description>
+            <vrf>
+              <forwarding>{/vrf_name}</forwarding>
+            </vrf>
+            <ip>
+              <address>
+                <primary>
+                  <address>{/interface/ipv4_address}</address>
+                  <mask>{/interface/ipv4_mask}</mask>
+                </primary>
+              </address>
+            </ip>
+          </GigabitEthernet>
+        </interface>
+        <router xmlns="urn:ios">
+          <bgp>
+            <as-no>{/as_number}</as-no>
+            <bgp>
+              <log-neighbor-changes>true</log-neighbor-changes>
+            </bgp>
+            <address-family>
+              <with-vrf>
+                <ipv4>
+                  <af>unicast</af>
+                  <vrf>
+                    <name>{/vrf_name}</name>
+                    <network>
+                      <number>10.1.1.1</number>
+                      <mask>255.255.255.255</mask>
+                    </network>
+                    <network>
+                      <number>192.168.2.0</number>
+                      <mask>255.255.255.0</mask>
+                    </network>
+                    <neighbor>
+                      <id>{/neighbor_ip_address}</id>
+                      <remote-as>{/remote_as_number}</remote-as>
+                      <activate/>
+                    </neighbor>
+                  </vrf>
+                </ipv4>
+              </with-vrf>
+            </address-family>
+          </bgp>
+        </router>
+        <!-- End of section -->
+
+        <!-- IOS-XE NETCONF NED section -->
+        <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+          <vrf>
+            <definition>
+              <name>{/vrf_name}</name>
+              <rd>{/remote_as_number}:1</rd>
+              <address-family>
+                <ipv4>
+                  <route-target>
+                    <export-route-target>
+                      <without-stitching>
+                        <asn-ip>{/remote_as_number}:1</asn-ip>
+                      </without-stitching>
+                    </export-route-target>
+                    <import-route-target>
+                      <without-stitching>
+                        <asn-ip>{/remote_as_number}:1</asn-ip>
+                      </without-stitching>
+                    </import-route-target>
+                  </route-target>
+                </ipv4>
+              </address-family>
+            </definition>
+          </vrf>
+          <interface>
+            <GigabitEthernet>
+              <name>{/interface/interface_number}</name>
+              <description>{/interface/interface_description}</description>
+              <vrf>
+                <forwarding>{/vrf_name}</forwarding>
+              </vrf>
+              <ip>
+                <address>
+                  <primary>
+                    <address>{/interface/ipv4_address}</address>
+                    <mask>{/interface/ipv4_mask}</mask>
+                  </primary>
+                </address>
+              </ip>
+            </GigabitEthernet>
+          </interface>
+          <router>
+            <bgp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-bgp">
+              <id>{/as_number}</id>
+              <address-family>
+                <with-vrf>
+                  <ipv4>
+                    <af-name>unicast</af-name>
+                    <vrf>
+                      <name>{/vrf_name}</name>
+                      <ipv4-unicast>
+                        <neighbor>
+                          <id>{/neighbor_ip_address}</id>
+                          <remote-as>{/remote_as_number}</remote-as>
+                          <activate/>
+                        </neighbor>
+                        <network>
+                          <with-mask>
+                            <number>10.1.1.1</number>
+                            <mask>255.255.255.255</mask>
+                          </with-mask>
+                        </network>
+                      </ipv4-unicast>
+                    </vrf>
+                  </ipv4>
+                </with-vrf>
+              </address-family>
+            </bgp>
+          </router>
+        </native>
+        <!-- End of section -->
+
       </config>
     </device>
   </devices>
