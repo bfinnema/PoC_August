@@ -156,8 +156,8 @@
                         <address-family>
                           <af-name>ipv4-unicast</af-name>
                           <route-policy>
-                            <in>PASS_ALL</in>
-                            <out>PASS_ALL</out>
+                            <in>PASS-ALL</in>
+                            <out>PASS-ALL</out>
                           </route-policy>
                         </address-family>
                       </address-families>
