@@ -131,47 +131,42 @@
         </routing-policy>
         <router xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
           <bgp>
-            <instances>
-              <instance>
-                <instance-name>{/as_number}</instance-name>
-                <as>
-                  <as-number>{/as_number}</as-number>
+            <as>
+              <as-number>{/as_number}</as-number>
+              <address-families>
+                <address-family>
+                  <af-name>ipv4-unicast</af-name>
+                </address-family>
+              </address-families>
+              <vrfs>
+                <vrf>
+                  <vrf-name>{/vrf_name}</vrf-name>
                   <address-families>
                     <address-family>
                       <af-name>ipv4-unicast</af-name>
+                      <redistribute>
+                        <connected/>
+                      </redistribute>
                     </address-family>
                   </address-families>
-                  <vrfs>
-                    <vrf>
-                      <vrf-name>{/vrf_name}</vrf-name>
+                  <neighbors>
+                    <neighbor>
+                      <neighbor-address>{/neighbor_ip_address}</neighbor-address>
                       <address-families>
                         <address-family>
                           <af-name>ipv4-unicast</af-name>
-                          <redistribute>
-                            <connected/>
-                          </redistribute>
+                          <route-policy>
+                            <in>PASS_ALL</in>
+                            <out>PASS_ALL</out>
+                          </route-policy>
                         </address-family>
                       </address-families>
-                      <neighbors>
-                        <neighbor>
-                          <neighbor-address>{/neighbor_ip_address}</neighbor-address>
-                          <address-families>
-                            <address-family>
-                              <af-name>ipv4-unicast</af-name>
-                              <route-policy>
-                                <in>PASS_ALL</in>
-                                <out>PASS_ALL</out>
-                              </route-policy>
-                            </address-family>
-                          </address-families>
-                          <remote-as>{/remote_as_number}</remote-as>
-                        </neighbor>
-                      </neighbors>
-                    </vrf>
-                  </vrfs>
-                </as>
-              </instance>
-            </instances>
+                      <remote-as>{/remote_as_number}</remote-as>
+                    </neighbor>
+                  </neighbors>
+                </vrf>
+              </vrfs>
+            </as>
           </bgp>
         </router>
         <vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-vrf-cfg">
