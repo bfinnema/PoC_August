@@ -136,6 +136,11 @@
                 <instance-name>{/as_number}</instance-name>
                 <as>
                   <as-number>{/as_number}</as-number>
+                  <address-families>
+                    <address-family>
+                      <af-name>ipv4-unicast</af-name>
+                    </address-family>
+                  </address-families>
                   <vrfs>
                     <vrf>
                       <vrf-name>{/vrf_name}</vrf-name>
@@ -200,6 +205,12 @@
                 </unicast>
               </ipv4>
             </address-family>
+            <rd xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+              <two-byte-as>
+                <as-number>{/remote_as_number}</as-number>
+                <index>1</index>
+              </two-byte-as>
+            </rd>
           </vrf>
         </vrfs>
         <!-- End of section -->
