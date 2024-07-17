@@ -1,0 +1,23 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+        <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
+          <interface>
+            <interface-name>{/interface/interface_name}{/interface/interface_number}</interface-name>
+            <ipv4>
+              <addresses xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg">
+                <address>
+                  <address>{$ipv4_address}</address>
+                  <netmask>{$ipv4_mask}</netmask>
+                </address>
+              </addresses>
+            </ipv4>
+            <description>{/interface/interface_description}</description>
+          </interface>
+        </interfaces>
+      </config>
+    </device>
+  </devices>
+</config-template>

@@ -1,0 +1,98 @@
+module section_33 {
+
+  namespace "http://example.com/section_33";
+  prefix section_33;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Section 3.3";
+
+  revision 2024-07-17 {
+    description
+      "Initial revision.";
+  }
+
+  grouping interface_grouping {
+    leaf interface_name {
+      tailf:info "Interface name. For example TenGigE.";
+      type enumeration {
+        enum FastEthernet;
+        enum GigabitEthernet;
+        enum TenGigE;
+        enum TwentyFiveGigE;
+        enum FortyGigE;
+        enum FiftyGigE;
+        enum HundredGigE;
+        enum TwoHundredGigE;
+        enum FourHundredGigE;
+        enum EightHundredGigE;
+        enum xe;
+      }
+      mandatory true;
+    }
+    leaf interface_number {
+      tailf:info "Interface number. For example 0 or 1/0";
+      type string {
+        pattern "[0-9]{1,2}(/[0-9]{1,2}){1,4}";
+      }
+      mandatory true;
+    }
+    leaf ipv4_address {
+      tailf:info "Interface IPv4 address.";
+      type inet:ipv4-address;
+    }
+    leaf ipv4_mask {
+      tailf:info "Interface IPv4 mask.";
+      type inet:ipv4-address;
+    }
+    leaf interface_description {
+      tailf:info "Interface description.";
+      type string;
+    }
+  }
+
+  list section_33 {
+    description "This is an RFS skeleton service";
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint section_33-servicepoint;
+
+    leaf device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf netbox_port {
+      type uint16;
+    }
+
+    leaf netbox_ipv4_pool {
+      type uint16;
+    }
+
+    leaf netbox_address {
+      type inet:ipv4-address;
+    }
+
+    container interface {
+      uses interface_grouping;
+    }
+  }
+}
