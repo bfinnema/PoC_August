@@ -91,6 +91,12 @@ module l3vpn_cpe_rfs {
       mandatory true;
     }
 
+    leaf vlan_id {
+      tailf:info "VLAN ID to be used as sub-interface number and for dot1q encapsulation";
+      type uint16;
+      mandatory true;
+    }
+
     leaf bgp_neighbor_address {
       type inet:ipv4-address;
     }

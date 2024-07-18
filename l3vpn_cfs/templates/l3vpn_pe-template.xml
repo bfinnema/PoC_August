@@ -6,6 +6,7 @@
         <as_number>{/as_number}</as_number>
         <remote_as_number>{/customer_as_number}</remote_as_number>
         <neighbor_ip_address>{$cpe_interface_address}</neighbor_ip_address>
+        <vlan_id>{$vlan_id}</vlan_id>
         <interface>
             <interface_name>{$pe_interface_name}</interface_name>
             <interface_number>{$pe_interface_number}</interface_number>

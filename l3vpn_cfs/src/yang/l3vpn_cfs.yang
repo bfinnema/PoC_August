@@ -107,6 +107,11 @@ module l3vpn_cfs {
         type inet:ipv4-address;
       }
 
+      leaf vlan_id {
+        tailf:info "VLAN ID to be used as sub-interface number and for dot1q encapsulation";
+        type uint16;
+      }
+
       container pe_interface {
         uses interface_grouping;
       }

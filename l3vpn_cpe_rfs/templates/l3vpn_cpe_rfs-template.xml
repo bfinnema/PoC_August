@@ -8,8 +8,13 @@
           <interface>
             <?if {starts-with(/interface/interface_name,'Gigabit')}?>
             <GigabitEthernet>
-              <name>{/interface/interface_number}</name>
+              <name>{/interface/interface_number}.{vlan_id}</name>
               <description>{/interface/interface_description}</description>
+              <encapsulation>
+                <dot1Q>
+                  <vlan-id>{/vlan_id}</vlan-id>
+                </dot1Q>
+              </encapsulation>
               <ip>
                 <address>
                   <primary>
@@ -81,12 +86,13 @@
           </Loopback>
           <?if {starts-with(/interface/interface_name,'Gigabit')}?>
           <GigabitEthernet>
-            <name>{/interface/interface_number}</name>
+            <name>{/interface/interface_number}.{/vlan_id}</name>
+            <encapsulation>
+              <dot1Q>
+                <vlan-id>{/vlan_id}</vlan-id>
+              </dot1Q>
+            </encapsulation>
             <ip>
-              <!-- <no-address>
-                <address xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"
-                        nc:operation="delete"/>
-              </no-address> -->
               <address>
                 <primary>
                   <address>{/interface/ipv4_address}</address>

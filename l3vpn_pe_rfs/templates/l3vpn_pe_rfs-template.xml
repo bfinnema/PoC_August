@@ -33,7 +33,7 @@
         </vrf>
         <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
           <?if {/interface/interface_name = 'TenGigE'}?>
-          <TenGigE>
+          <!-- <TenGigE>
             <id>{/interface/interface_number}</id>
             <vrf>{/vrf_name}</vrf>
             <ipv4>
@@ -43,10 +43,28 @@
               </address>
             </ipv4>
             <description>{/interface/interface_description}</description>
-          </TenGigE>
+          </TenGigE> -->
+          <TenGigE-subinterface>
+            <TenGigE>
+              <id>{/interface/interface_number}.{/vlan_id}</id>
+              <description>{/interface/interface_description}</description>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{/vlan_id}</vlan-id>
+                </dot1q>
+              </encapsulation>
+              <vrf>{/vrf_name}</vrf>
+              <ipv4>
+                <address>
+                  <ip>{/interface/ipv4_address}</ip>
+                  <mask>{/interface/ipv4_mask}</mask>
+                </address>
+              </ipv4>
+            </TenGigE>
+          </TenGigE-subinterface>
           <?end?>
           <?if {/interface/interface_name = 'GigabitEthernet'}?>
-          <GigabitEthernet>
+          <!-- <GigabitEthernet>
             <id>{/interface/interface_number}</id>
             <vrf>{/vrf_name}</vrf>
             <ipv4>
@@ -56,7 +74,25 @@
               </address>
             </ipv4>
             <description>{/interface/interface_description}</description>
-          </GigabitEthernet>
+          </GigabitEthernet> -->
+          <GigabitEthernet-subinterface>
+            <GigabitEthernet>
+              <id>{/interface/interface_number}.{/vlan_id}</id>
+              <description>{/interface/interface_description}</description>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{/vlan_id}</vlan-id>
+                </dot1q>
+              </encapsulation>
+              <vrf>{/vrf_name}</vrf>
+              <ipv4>
+                <address>
+                  <ip>{/interface/ipv4_address}</ip>
+                  <mask>{/interface/ipv4_mask}</mask>
+                </address>
+              </ipv4>
+            </GigabitEthernet>
+          </GigabitEthernet-subinterface>
           <?end?>
         </interface>
         <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
@@ -104,7 +140,7 @@
         
         <!-- IOS-XR NETCONF NED section -->
         <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
-          <interface>
+          <!-- <interface>
             <interface-name>{/interface/interface_name}{/interface/interface_number}</interface-name>
             <vrf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-vrf-cfg">{/vrf_name}</vrf>
             <ipv4>
@@ -116,6 +152,24 @@
               </addresses>
             </ipv4>
             <description>{/interface/interface_description}</description>
+          </interface> -->
+          <interface>
+            <interface-name>{/interface/interface_name}{/interface/interface_number}.{/vlan_id}</interface-name>
+            <ipv4>
+              <addresses xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg">
+                <address>
+                  <address>{/interface/ipv4_address}</address>
+                  <netmask>{/interface/ipv4_mask}</netmask>
+                </address>
+              </addresses>
+            </ipv4>
+            <description>L3VPN with subinterface</description>
+            <vrf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-vrf-cfg">{/vrf_name}</vrf>
+            <encapsulation xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg">
+              <dot1q>
+                <vlan-id>{/vlan_id}</vlan-id>
+              </dot1q>
+            </encapsulation>
           </interface>
         </interfaces>
         <routing-policy xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-route-policy-cfg">

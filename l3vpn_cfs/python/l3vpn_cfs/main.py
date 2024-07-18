@@ -25,6 +25,7 @@ class ServiceCallbacks(Service):
             # vars.add('pe_interface_description', endpoint.pe_interface.interface_description)
             vars.add('pe_ipv4_address', endpoint.pe_interface.ipv4_address)
             vars.add('pe_ipv4_mask', endpoint.pe_interface.ipv4_mask)
+            vars.add('vlan_id', endpoint.vlan_id)
             template.apply('l3vpn_pe-template', vars)
 
             # CPE part

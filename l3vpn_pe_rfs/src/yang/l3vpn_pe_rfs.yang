@@ -97,6 +97,12 @@ module l3vpn_pe_rfs {
       mandatory true;
     }
 
+    leaf vlan_id {
+      tailf:info "VLAN ID to be used as sub-interface number and for dot1q encapsulation";
+      type uint16;
+      mandatory true;
+    }
+
     leaf neighbor_ip_address {
       tailf:info "Address of the BGP peer in the VRF";
       type inet:ipv4-address;

@@ -7,6 +7,7 @@
         <bgp_neighbor_address>{$pe_interface_address}</bgp_neighbor_address>
         <loopback0_address>{$cpe_loopback0_address}</loopback0_address>
         <loopback0_mask>{$cpe_loopback0_mask}</loopback0_mask>
+        <vlan_id>{$vlan_id}</vlan_id>
         <interface>
             <interface_name>{$cpe_interface_name}</interface_name>
             <interface_number>{$cpe_interface_number}</interface_number>
