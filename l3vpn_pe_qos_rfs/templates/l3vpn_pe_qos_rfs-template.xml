@@ -5,119 +5,44 @@
       <config>
         <!-- IOS-XR CLI NED section -->
         <class-map xmlns="http://tail-f.com/ned/cisco-ios-xr">
-          <name>Video</name>
-          <prematch>match-all</prematch>
-          <match>
-            <dscp>
-              <ipv4>af41</ipv4>
-              <ipv4>ef</ipv4>
-            </dscp>
-          </match>
-        </class-map>
-        <class-map xmlns="http://tail-f.com/ned/cisco-ios-xr">
           <name>Voice</name>
           <prematch>match-all</prematch>
           <match>
             <dscp>
-              <ipv4>ef</ipv4>
+              <dscp-list>ef</dscp-list>
             </dscp>
           </match>
         </class-map>
-        <policy-map xmlns="http://tail-f.com/ned/cisco-ios-xr">
-          <name>PE-Parent-Policy</name>
-          <class>
-            <class-default>
-              <map>class-default</map>
-              <shape>
-                <average>
-                  <rate>{/bit_rate}</rate>
-                  <rate-unit>kbps</rate-unit>
-                </average>
-              </shape>
-              <service-policy>
-                <name>PE-Policy</name>
-              </service-policy>
-            </class-default>
-          </class>
-        </policy-map>
         <policy-map xmlns="http://tail-f.com/ned/cisco-ios-xr">
           <name>PE-Policy</name>
           <class>
             <class-ref>
               <map>Voice</map>
-              <police-rate-unit>
-                <police>
-                  <rate>
-                    <percent>25</percent>
-                  </rate>
-                </police>
-              </police-rate-unit>
               <set>
                 <cos>
                   <cos-value>5</cos-value>
                 </cos>
               </set>
-              <priority>
-                <level>1</level>
-              </priority>
-              <queue-limit>
-                <queue-limit-value>12</queue-limit-value>
-                <queue-limit-unit>packets</queue-limit-unit>
-              </queue-limit>
-            </class-ref>
-            <class-ref>
-              <map>Video</map>
-              <bandwidth>
-                <percent>30</percent>
-              </bandwidth>
-              <set>
-                <cos>
-                  <cos-value>4</cos-value>
-                </cos>
-              </set>
-              <queue-limit>
-                <queue-limit-value>24</queue-limit-value>
-                <queue-limit-unit>packets</queue-limit-unit>
-              </queue-limit>
             </class-ref>
             <class-default>
               <map>class-default</map>
-              <bandwidth>
-                <percent>45</percent>
-              </bandwidth>
               <set>
                 <cos>
                   <cos-value>0</cos-value>
                 </cos>
               </set>
-              <queue-limit>
-                <queue-limit-value>512</queue-limit-value>
-                <queue-limit-unit>packets</queue-limit-unit>
-              </queue-limit>
             </class-default>
           </class>
         </policy-map>
         <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
-          <?if {/interface/interface_name = 'TenGigE'}?>
-          <TenGigE>
-            <id>{/interface/interface_number}</id>
-            <service-policy>
-              <output>
-                <name>PE-Parent-Policy</name>
-              </output>
-            </service-policy>
-          </TenGigE>
-          <?end?>
-          <?if {/interface/interface_name = 'GigabitEthernet'}?>
           <GigabitEthernet>
             <id>{/interface/interface_number}</id>
             <service-policy>
-              <output>
-                <name>PE-Parent-Policy</name>
-              </output>
+              <input>
+                <name>PE-Policy</name>
+              </input>
             </service-policy>
           </GigabitEthernet>
-          <?end?>
         </interface>
         <!-- End of section -->
         
@@ -126,30 +51,21 @@
           <interface>
             <interface-name>{/interface/interface_name}{/interface/interface_number}</interface-name>
             <service-policy xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-service-policy-qos-cfg">
-              <output>
-                <service-policy-name>PE-Parent-Policy</service-policy-name>
-              </output>
+              <input>
+                <service-policy-name>PE-Policy</service-policy-name>
+              </input>
             </service-policy>
           </interface>
         </interfaces>
         <class-map xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-policymap-classmap-cfg">
           <type>
             <qos>
-              <class-map-name>Video</class-map-name>
-              <match-all/>
-              <match>
-                <dscp-ipv4>
-                  <value>af41</value>
-                </dscp-ipv4>
-              </match>
-            </qos>
-            <qos>
               <class-map-name>Voice</class-map-name>
               <match-all/>
               <match>
-                <dscp-ipv4>
+                <dscp>
                   <value>ef</value>
-                </dscp-ipv4>
+                </dscp>
               </match>
             </qos>
           </type>
@@ -157,61 +73,10 @@
         <policy-map xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-policymap-classmap-cfg">
           <type>
             <qos>
-              <policy-map-name>PE-Parent-Policy</policy-map-name>
-              <class>
-                <name>class-default</name>
-                <type>qos</type>
-                <service-policy>
-                  <name>PE-Policy</name>
-                  <type>qos</type>
-                </service-policy>
-                <shape>
-                  <average>
-                    <rate>
-                      <value>{/bit_rate}</value>
-                      <unit>kbps</unit>
-                    </rate>
-                  </average>
-                </shape>
-              </class>
-            </qos>
-            <qos>
               <policy-map-name>PE-Policy</policy-map-name>
-              <class>
-                <name>Video</name>
-                <type>qos</type>
-                <bandwidth>
-                  <value>30</value>
-                  <unit>percent</unit>
-                </bandwidth>
-                <queue-limits>
-                  <queue-limit>
-                    <value>24</value>
-                    <unit>packets</unit>
-                  </queue-limit>
-                </queue-limits>
-                <set>
-                  <cos>4</cos>
-                </set>
-              </class>
               <class>
                 <name>Voice</name>
                 <type>qos</type>
-                <police>
-                  <rate>
-                    <value>25</value>
-                    <unit>percent</unit>
-                  </rate>
-                </police>
-                <priority>
-                  <level>1</level>
-                </priority>
-                <queue-limits>
-                  <queue-limit>
-                    <value>12</value>
-                    <unit>packets</unit>
-                  </queue-limit>
-                </queue-limits>
                 <set>
                   <cos>5</cos>
                 </set>
@@ -219,16 +84,6 @@
               <class>
                 <name>class-default</name>
                 <type>qos</type>
-                <bandwidth>
-                  <value>45</value>
-                  <unit>percent</unit>
-                </bandwidth>
-                <queue-limits>
-                  <queue-limit>
-                    <value>512</value>
-                    <unit>packets</unit>
-                  </queue-limit>
-                </queue-limits>
                 <set>
                   <cos>0</cos>
                 </set>
