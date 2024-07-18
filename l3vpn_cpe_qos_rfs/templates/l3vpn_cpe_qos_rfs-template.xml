@@ -28,8 +28,8 @@
               <name>class-default</name>
               <shape>
                 <average>
-                  <!-- <bit-rate>10240000</bit-rate> -->
-                  <bit-rate>{/bit_rate}</bit-rate>
+                  <bit-rate>10240000</bit-rate>
+                  <!-- <bit-rate>{/bit_rate}</bit-rate> -->
                 </average>
               </shape>
               <service-policy>CPE-Policy</service-policy>
