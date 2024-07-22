@@ -1,5 +1,5 @@
 module l3vpn_cfs {
-
+  yang-version 1.1;
   namespace "http://example.com/l3vpn_cfs";
   prefix l3vpn_cfs;
 
@@ -83,6 +83,36 @@ module l3vpn_cfs {
       mandatory true;
     }
 
+        container last-ping {
+          config false;
+          leaf when {
+            type string;
+          }
+          list endpoint {
+            key id;
+            leaf id {
+              type leafref {
+                  path ../../../endpoint/id ;
+              }
+            }
+            leaf local-result {
+              type string;
+            }
+            leaf remote-result {
+              type string;
+            }
+          }
+
+        }  
+
+    action ping-test {
+      tailf:actionpoint l3vpn_cfs-ping-test;
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
     list endpoint {
       key id;
       leaf id {
