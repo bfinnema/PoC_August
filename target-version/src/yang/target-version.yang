@@ -1,0 +1,77 @@
+module target-version {
+  yang-version 1.1;
+  namespace "http://example.com/target-version";
+  prefix target-version;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Action to check software versions against a target";
+
+  revision 2016-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  grouping check-action {
+    container target-software {
+      action check {
+          tailf:actionpoint target-version-check;
+          input {
+            leaf suppress-positive {
+              description 'Do not show results where the target and actual software version are identical';
+              type empty; 
+            }
+            leaf include-unset { 
+              description 'Include results for devices where the target software version is not set';
+              type empty;
+            }
+          }
+          output {
+            list result {
+              leaf device {
+                type string;
+              }
+              leaf message {
+                type string;
+              }
+              leaf OK {
+                type boolean;
+              }
+            }
+          }
+        } 
+    }   
+  }
+
+  augment /ncs:devices {
+      uses check-action;
+  }
+
+  augment /ncs:devices/ncs:device {
+    uses check-action {
+      augment target-software {
+        leaf version {
+          description "Target sofware version";
+          type string;
+        }
+      }
+    }
+  }
+
+  augment /ncs:devices/ncs:profiles/ncs:profile {
+      uses check-action;
+  }
+
+  augment /ncs:devices/ncs:device-group {
+      uses check-action;
+  }
+}
