@@ -36,6 +36,7 @@ class CheckAction(Action):
                 return res
 
             for device in iter:
+                version_found = None
                 if device.device_type.ne_type._name == 'cli':
                     version_found = device.platform.version
                 elif 'native' in device.live_status and 'version' in device.live_status.native:
