@@ -1,0 +1,427 @@
+module inventory {
+
+  namespace "http://example.com/inventory";
+  prefix inventory;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Inventory for the PoC";
+
+  revision 2024-07-21 {
+    description
+      "Initial revision.";
+  }
+
+  container inventory {
+    container netbox {
+      leaf netbox_token {
+        type string;
+      }
+      leaf netbox_address {
+        type inet:ipv4-address;
+      }
+      leaf netbox_port {
+        type uint16;
+      }
+    }
+
+    container prefix_sets {
+      list prefix_set {
+        key prefix_set_name;
+        leaf prefix_set_name {
+          type string;
+        }
+        list rpl_prefix_set {
+          key prefix_set_ip;
+          leaf prefix_set_ip {
+            type inet:ipv4-address;
+          }
+          leaf prefix_set_mask1 {
+            tailf:info "E.g. 16";
+            type uint16;
+          }
+          leaf prefix_set_operator {
+            tailf:info "E.g. le";
+            type string;
+          }
+          leaf prefix_set_mask2 {
+            tailf:info "E.g. 32";
+            type uint16;
+          }
+        }
+      }
+    }
+
+    container community_sets {
+      list community_set {
+        key community_set_name;
+        leaf community_set_name {
+          type string;
+        }
+        list rpl_community_set {
+          key part2;
+          leaf part1 {
+            type uint16;
+          }
+          leaf part2 {
+            type uint16;
+          }
+        }
+      }
+    }
+
+    // The access_lists inventory does not at all cover all access-list options in IOS-XR!!
+    container access_lists {
+      list access_list {
+        key acl_name;
+        leaf acl_name {
+          type string;
+        }
+        list sequence {
+          key sequence_number;
+          leaf sequence_number {
+            type uint16;
+          }
+          leaf permit_or_deny {
+            type enumeration {
+              enum permit;
+              enum deny;
+            }
+          }
+          leaf protocol {
+            type enumeration { // The list is not complete!!
+              enum ipv4;
+              enum tcp;
+              enum udp;
+            }
+          }
+          list statements {
+            key subject;
+            leaf subject {
+              type enumeration { // The list is not complete!!
+                enum source;
+                enum destination;
+              }
+            }
+            leaf scope {
+              type enumeration { // The list is not complete!!
+                enum any;
+                enum address;
+                enum host;
+              }
+            }
+            leaf ipv4_addr {
+              tailf:display-when "../scope != 'any'";
+              type inet:ipv4-address;
+            }
+            leaf prefix-length {
+              tailf:display-when "../scope = 'address'";
+              type uint16;
+            }
+          }
+        }
+      }
+    }
+
+    container qos_policy_maps {
+      list qos_policy_map {
+        key qos_policy_map_name;
+        leaf qos_policy_map_name {
+          type string;
+        }
+        leaf description {
+          type string;
+        }
+        container policy_classes {
+          list policy_class {
+            key class_name;
+            leaf class_name {
+              type leafref {
+                path "../../../../../qos_class_maps/qos_class_map/qos_class_map_name";
+              }
+            }
+            leaf class_type {
+              type enumeration {
+                enum qos;
+                enum traffic;
+              }
+            }
+            list class_operation {
+              key operation_name;
+              leaf operation_name {
+                tailf:info "Just any name";
+                type string;
+              }
+              leaf class_operation_name {
+                type enumeration {
+                  enum set;
+                  enum police;
+                  enum shape;
+                  enum bandwidth;
+                  enum service-policy;
+                  // The list is not complete
+                }
+              }
+              leaf service_policy {
+                tailf:display-when "../class_operation_name = 'service-policy'";
+                type leafref {
+                  path "../../../../../../qos_policy_maps/qos_policy_map/qos_policy_map_name";
+                }
+              }
+              leaf set_subject {
+                tailf:display-when "../class_operation_name = 'set'";
+                type enumeration {
+                  enum qos-group;
+                  enum traffic-class;
+                  enum discard-class;
+                  enum cos;
+                  enum dscp;
+                  // The list is not complete
+                }
+              }
+              leaf police_subject {
+                tailf:display-when "../class_operation_name = 'police'";
+                type enumeration {
+                  enum police_rate;
+                  // The list is not complete
+                }
+              }
+              leaf qos_group_value {
+                tailf:display-when "../set_subject = 'qos-group'";
+                type uint8 {
+                  range "0..8";
+                }
+              }
+              leaf traffic_class_value {
+                tailf:display-when "../set_subject = 'traffic-class'";
+                type uint8 {
+                  range "0..8";
+                }
+              }
+              leaf discard_class_value {
+                tailf:display-when "../set_subject = 'discard-class'";
+                type uint8 {
+                  range "0..8";
+                }
+              }
+              leaf police_value {
+                tailf:display-when "../police_subject = 'police_rate'";
+                type uint64;
+              }
+              leaf police_unit {
+                tailf:display-when "../police_subject = 'police_rate'";
+                type enumeration {
+                  enum percent;
+                  enum bps;
+                  enum cellsps;
+                  enum kbps;
+                  enum mbps;
+                  enum gbps;
+                  enum pps;
+                  enum per-million;
+                  enum per-thousand;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    container qos_class_maps {
+      list qos_class_map {
+        key qos_class_map_name;
+        leaf qos_class_map_name {
+          type string;
+        }
+        leaf match_statement {
+          type enumeration {
+            enum match-all;
+            enum match-any;
+            enum match-not;
+          }
+        }
+        leaf description {
+          type string;
+        }
+        container match_elements {
+          list match_element {
+            key match_subject;
+            leaf match_subject {
+              type enumeration {
+                enum ipv4;
+                enum traffic-class;
+                enum destination-address;
+                enum protocol;
+                enum vlan;
+                enum destination-port;
+                enum mpls;
+                enum qos-group;
+                enum cos;
+                enum dscp;
+                enum precedence;
+                // The list is not complete. Only the ones used by the use-case are enabled
+              }
+            }
+            container mpls {
+              tailf:display-when "../match_subject = 'mpls'";
+              leaf mpls_subject1 {
+                type enumeration {
+                  enum experimental;
+                  enum disposition;
+                }
+              }
+              leaf mpls_experimental {
+                tailf:display-when "../mpls_subject1 = 'experimental'";
+                type enumeration {
+                  enum imposition;
+                  enum topmost;
+                }
+              }
+              list mpls_labels {
+                // tailf:display-when "../mpls_subject1 = 'experimental'";
+                key mpls_label;
+                leaf mpls_label {
+                  type uint8 {
+                    range "1..7";
+                  }
+                }
+              }
+              leaf mpls_disposition {
+                tailf:display-when "../mpls_subject1 = 'disposition'";
+                type enumeration {
+                  enum access-group;
+                  enum class-map;
+                }
+              }
+              leaf mpls_disposition_af {
+                tailf:display-when "../mpls_subject1 = 'disposition'";
+                type enumeration {
+                  enum ipv4;
+                  enum ipv6;
+                }
+              }
+              leaf disposition_string {
+                tailf:display-when "../mpls_subject1 = 'disposition'";
+                type string;
+              }
+            }
+            container dscp {
+              tailf:display-when "../match_subject = 'dscp'";
+              list dscp_values {
+                key dscp_value;
+                leaf dscp_value {
+                  type enumeration {
+                    enum af11;
+                    enum af12;
+                    enum af13;
+                    enum af21;
+                    enum af22;
+                    enum af23;
+                    enum af31;
+                    enum af32;
+                    enum af33;
+                    enum af41;
+                    enum af42;
+                    enum af43;
+                    enum cs1;
+                    enum cs2;
+                    enum cs3;
+                    enum cs4;
+                    enum cs5;
+                    enum cs6;
+                    enum cs7;
+                    enum ef;
+                    enum def;
+                  }
+                }
+              }
+            }
+            container cos {
+              tailf:display-when "../match_subject = 'cos'";
+              list cos_values {
+                key cos_value;
+                leaf cos_value {
+                  type uint8 {
+                    range "1..7";
+                  }
+                }
+              }
+            }
+            container vlan {
+              tailf:display-when "../match_subject = 'vlan'";
+              list vlan_ids {
+                key vlan_id;
+                leaf vlan_id {
+                  type uint16 {
+                    range "1..4095";
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    container ipsla_db {
+      leaf first_source_port {
+        tailf:info "First port in the pool of source ports";
+        type uint16;
+      }
+      leaf last_source_port {
+        tailf:info "Last port in the pool of source ports";
+        type uint16;
+      }
+      leaf first_destination_port {
+        tailf:info "First port in the pool of destination ports";
+        type uint16;
+      }
+      leaf last_destination_port {
+        tailf:info "Last port in the pool of destination ports";
+        type uint16;
+      }
+      container source_ports {
+        list source_port {
+          key sp;
+          leaf sp {
+            type uint16;
+          }
+          leaf seized {
+            type boolean;
+            default false;
+          }
+          leaf used_by {
+            type string;
+            default "Unknown";
+          }
+        }
+      }
+      container destination_ports {
+        list destination_port {
+          key dp;
+          leaf dp {
+            type uint16;
+          }
+          leaf seized {
+            type boolean;
+            default false;
+          }
+          leaf used_by {
+            type string;
+            default "Unknown";
+          }
+        }
+      }
+    }
+  }
+}

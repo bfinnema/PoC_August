@@ -9,7 +9,18 @@ class ServiceCallbacks(Service):
     def cb_create(self, tctx, root, service, proplist):
         self.log.info('Service create(service=', service._path, ')')
 
-        headers = {"Authorization":"Token e657404c0e1f57481ad0a06c293e8fe794e720ac", "Accept": "application/json", "Content-Type": "application/json"}
+        try:
+            netbox_token = root.inventory.netbox.netbox_token
+            netbox_address = root.inventory.netbox.netbox_address
+            netbox_port = root.inventory.netbox.netbox_port
+        except:
+            self.log.info('Netbox details missing in inventory.')
+            netbox_token = "Token e657404c0e1f57481ad0a06c293e8fe794e720ac"
+            netbox_address = "10.101.180.45"
+            netbox_port = "8000"
+
+        # headers = {"Authorization":"Token e657404c0e1f57481ad0a06c293e8fe794e720ac", "Accept": "application/json", "Content-Type": "application/json"}
+        headers = {"Authorization":netbox_token, "Accept": "application/json", "Content-Type": "application/json"}
         body = {}
 
         vars = ncs.template.Variables()
@@ -18,7 +29,9 @@ class ServiceCallbacks(Service):
         for endpoint in service.endpoint:
 
             # Get an Outer VLAN from Netbox. The VLAN group for outer VLAN's is #2.
-            api_url="https://10.101.180.45:8000/api/ipam/vlan-groups/2/available-vlans/"
+            netbox_vlan_pool = 2
+            # api_url="https://10.101.180.45:8000/api/ipam/vlan-groups/2/available-vlans/"
+            api_url = f"https://{netbox_address}:{netbox_port}/api/ipam/vlan-groups/{netbox_vlan_pool}/available-vlans/"
             ovlan_name = "L2VPN-Outer-VLAN-"+str(endpoint.pe_device)+"-"+str(endpoint.id)
             body = {"name": ovlan_name}
             try:
@@ -35,7 +48,9 @@ class ServiceCallbacks(Service):
             vars.add('ovlan', ovlan_id)
 
             # Get an Inner VLAN from Netbox. The VLAN group for inner VLAN's is #3.
-            api_url="https://10.101.180.45:8000/api/ipam/vlan-groups/3/available-vlans/"
+            # api_url="https://10.101.180.45:8000/api/ipam/vlan-groups/3/available-vlans/"
+            netbox_vlan_pool = 3
+            api_url = f"https://{netbox_address}:{netbox_port}/api/ipam/vlan-groups/{netbox_vlan_pool}/available-vlans/"
             ivlan_name = "L2VPN-Inner-VLAN-"+str(endpoint.pe_device)+"-"+str(endpoint.id)
             body = {"name": ivlan_name}
             try:

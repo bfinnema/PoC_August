@@ -1,6 +1,7 @@
 # -*- mode: python; python-indent: 4 -*-
 import ncs
 from ncs.application import Service
+from ncs.dp import Action
 import requests
 import socket
 import struct
@@ -40,6 +41,14 @@ class ServiceCallbacks(Service):
         vars = ncs.template.Variables()
         template = ncs.template.Template(service)
         template.apply('netbox_test-template', vars)
+
+class ReleaseResources(Action):
+    @Action.action
+    def cb_action(self, uinfo, name, kp, input, output, trans):
+        self.log.info('action name: ', name)
+        self.log.info('KICKER HAS BEEN KICKED')
+        self.log.info(f'Action input: kicker-id: {input.kicker_id}, path: {input.path}, tid: {input.tid}')
+        self.log.info(dir(input))
 
 class Main(ncs.application.Application):
     def setup(self):

@@ -1,0 +1,78 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$device}</name>
+      <config>
+        <ipv4 xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-ipv4-access-list-cfg">
+          <access-lists>
+            <access-list>
+              <access-list-name>{$acl_name}</access-list-name>
+              <sequences>
+                <sequence>
+                  <sequence-number>{$sequence_number}</sequence-number>
+                  <?if {$permit_or_deny = 'permit'}?>
+                    <permit>
+                      <protocol>{$protocol}</protocol>
+                      <source>
+                        <?if {$source_scope = 'any'}?>
+                          <any/>
+                        <?else?>
+                          <?if {$source_scope = 'address'}?>
+                            <address>{$source_ipv4_addr}</address>
+                            <prefix-length>{$source_prefix_length}</prefix-length>
+                          <?else?>
+                            <host>{$source_ipv4_addr}</host>
+                          <?end?>
+                        <?end?>
+                      </source>
+                      <destination>
+                        <?if {$dest_scope = 'any'}?>
+                          <any/>
+                        <?else?>
+                          <?if {$dest_scope = 'address'}?>
+                            <address>{$dest_ipv4_addr}</address>
+                            <prefix-length>{$dest_prefix_length}</prefix-length>
+                          <?else?>
+                            <host>{$dest_ipv4_addr}</host>
+                          <?end?>
+                        <?end?>
+                      </destination>
+                    </permit>
+                  <?else?>
+                    <deny>
+                      <protocol>{$protocol}</protocol>
+                      <source>
+                        <?if {$source_scope = 'any'}?>
+                          <any/>
+                        <?else?>
+                          <?if {$source_scope = 'address'}?>
+                            <address>{$source_ipv4_addr}</address>
+                            <prefix-length>{$source_prefix_length}</prefix-length>
+                          <?else?>
+                            <host>{$source_ipv4_addr}</host>
+                          <?end?>
+                        <?end?>
+                      </source>
+                      <destination>
+                        <?if {$dest_scope = 'any'}?>
+                          <any/>
+                        <?else?>
+                          <?if {$dest_scope = 'address'}?>
+                            <address>{$dest_ipv4_addr}</address>
+                            <prefix-length>{$dest_prefix_length}</prefix-length>
+                          <?else?>
+                            <host>{$dest_ipv4_addr}</host>
+                          <?end?>
+                        <?end?>
+                      </destination>
+                    </deny>
+                  <?end?>
+                </sequence>
+              </sequences>
+            </access-list>
+          </access-lists>
+        </ipv4>
+      </config>
+    </device>
+  </devices>
+</config-template>

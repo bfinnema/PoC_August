@@ -12,9 +12,17 @@ module l2vpn_cfs {
   import tailf-ncs {
     prefix ncs;
   }
+  import inventory {
+    prefix inventory;
+  }
 
   description
     "CFS, L2VPN service with QinQ in the switched network between PE and CPE";
+
+  revision 2024-07-25 {
+    description
+      "Netbox details in inventory.";
+  }
 
   revision 2024-07-11 {
     description
