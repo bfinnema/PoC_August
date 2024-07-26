@@ -33,17 +33,6 @@
         </vrf>
         <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
           <?if {/interface/interface_name = 'TenGigE'}?>
-          <!-- <TenGigE>
-            <id>{/interface/interface_number}</id>
-            <vrf>{/vrf_name}</vrf>
-            <ipv4>
-              <address>
-                <ip>{/interface/ipv4_address}</ip>
-                <mask>{/interface/ipv4_mask}</mask>
-              </address>
-            </ipv4>
-            <description>{/interface/interface_description}</description>
-          </TenGigE> -->
           <TenGigE-subinterface>
             <TenGigE>
               <id>{/interface/interface_number}.{/vlan_id}</id>
@@ -64,17 +53,6 @@
           </TenGigE-subinterface>
           <?end?>
           <?if {/interface/interface_name = 'GigabitEthernet'}?>
-          <!-- <GigabitEthernet>
-            <id>{/interface/interface_number}</id>
-            <vrf>{/vrf_name}</vrf>
-            <ipv4>
-              <address>
-                <ip>{/interface/ipv4_address}</ip>
-                <mask>{/interface/ipv4_mask}</mask>
-              </address>
-            </ipv4>
-            <description>{/interface/interface_description}</description>
-          </GigabitEthernet> -->
           <GigabitEthernet-subinterface>
             <GigabitEthernet>
               <id>{/interface/interface_number}.{/vlan_id}</id>
@@ -140,19 +118,6 @@
         
         <!-- IOS-XR NETCONF NED section -->
         <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
-          <!-- <interface>
-            <interface-name>{/interface/interface_name}{/interface/interface_number}</interface-name>
-            <vrf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-vrf-cfg">{/vrf_name}</vrf>
-            <ipv4>
-              <addresses xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg">
-                <address>
-                  <address>{/interface/ipv4_address}</address>
-                  <netmask>{/interface/ipv4_mask}</netmask>
-                </address>
-              </addresses>
-            </ipv4>
-            <description>{/interface/interface_description}</description>
-          </interface> -->
           <interface>
             <interface-name>{/interface/interface_name}{/interface/interface_number}.{/vlan_id}</interface-name>
             <ipv4>
