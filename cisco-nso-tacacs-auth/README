@@ -1,0 +1,75 @@
+cisco-nso-tacacs-auth
+=====================
+
+This authentication package provides TACACS+ functionality for NSO.
+
+
+Table of contents
+
+    1. Configuration
+    1.1. Installation
+    1.2. NSO Configuration
+    1.3. Package Configuration
+    2. Usage
+    3. Requirements
+
+
+1. Configuration
+
+1.1. Installation
+
+   In order to use this package, NSO must be run with access to the
+   required Python packages found in requirements.txt.
+
+
+1.2. NSO Configuration
+
+   This authentication package needs NSO Package Authentication to be
+   enabled.
+
+   Enable Package Authentication by setting
+
+       /ncs-config/aaa/package-authentication/enabled = true
+
+   Add the TACACS+ package (cisco-nso-tacacs-auth) to the list of
+   available authentication packages by setting
+
+       /ncs-config/aaa/package-authentication/packages
+
+
+1.3. Package Configuration
+
+   In order to configure TACACS+ the cisco-nso-tacacs-auth.yang model
+   needs to be populated with at least the following configuration.
+
+   At lest one TACACS+ server needs to be added to the list of servers,
+   /tacacs-auth/tacacs-server, and configured servers needs to be
+   configured with host, port, and secret. Configuring a server's
+   timeout is optional and will be defaulted to 10 seconds if not set.
+
+   Required TACACS+ server host configuration:
+
+       tacacs-auth tacacs-server host
+       tacacs-auth tacacs-server port
+       tacacs-auth tacacs-server secret
+
+   To optionally set a client timeout value:
+
+       tacacs-auth tacacs-server timeout
+
+
+2. Usage
+
+   When a user authentication request is made to the NSO server,
+   configured TACACS+ servers will (when the interface allows it) be
+   called to authenticate the request. When a server authenticates a
+   user request, a session will be created for the user.
+
+   If multiple TACACS+ servers are configured, they are tried in the
+   order they are listed in the /tacacs-auth/tacacs-server list.
+
+
+3. Requirements
+
+   The response from the TACACS+ server must contain at least one group
+   that should be assigned to the user.

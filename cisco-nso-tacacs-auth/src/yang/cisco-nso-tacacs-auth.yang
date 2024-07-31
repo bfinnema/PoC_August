@@ -1,0 +1,79 @@
+module cisco-nso-tacacs-auth {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/cisco-nso-tacacs-auth";
+  prefix cisco-nso-tacacs-auth;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+
+  organization "Tail-f Systems";
+
+  description
+    "This model contains the configuration for the TACACS+ authentication
+     NCS package.
+
+     Copyright 2021-2023 Cisco Systems, Inc.
+     All righs reserved.
+     Permission is hereby granted to redistribute this file without
+     modification.";
+
+  revision 2023-11-16 {
+    description
+      "Released as part of NCS-6.2.
+
+       Adapted to work with the NSO package authentication framework.";
+  }
+
+  revision 2022-07-19 {
+    description
+      "Redesigned to add port and create a list of TACACS servers";
+  }
+
+  revision 2021-08-03 {
+    description
+      "Initial revision.";
+  }
+
+  container tacacs-auth {
+    list tacacs-server {
+      key "host port";
+      description
+        "List of available TACACS servers.";
+
+      leaf host {
+          tailf:info "TACACS server host address";
+          type inet:host;
+          description
+            "The host address for a TACACS server.";
+      }
+
+      leaf port {
+          tailf:info "TACACS server port";
+          type inet:port-number;
+          description
+            "The port for a TACACS server.";
+      }
+
+      leaf secret {
+          tailf:info "TACACS server key";
+          type tailf:aes-256-cfb-128-encrypted-string;
+          description
+            "The key to use when communicating with the TACACS server.";
+      }
+
+      leaf timeout {
+          tailf:info "TACACS server connection timeout";
+          type uint16;
+          default 10;
+          description
+            "The socket timeout in seconds for TACACS server connection.
+
+             Defaults to 10 seconds.";
+      }
+    }
+  }
+}

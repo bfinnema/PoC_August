@@ -70,6 +70,11 @@ module l3vpn_cpe_qos_rfs {
       type uint32;
     }
 
+    leaf vlan_id {
+      tailf:info "VLAN ID to be used as sub-interface number and for dot1q encapsulation";
+      type uint16;
+    }
+
     container interface {
       uses interface_grouping;
     }

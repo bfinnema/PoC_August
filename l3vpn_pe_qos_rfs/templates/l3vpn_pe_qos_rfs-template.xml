@@ -35,21 +35,37 @@
           </class>
         </policy-map>
         <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
-          <GigabitEthernet>
-            <id>{/interface/interface_number}</id>
-            <service-policy>
-              <input>
-                <name>PE-Policy</name>
-              </input>
-            </service-policy>
-          </GigabitEthernet>
+          <?if {/interface/interface_name = 'GigabitEthernet'}?>
+          <GigabitEthernet-subinterface>
+            <GigabitEthernet>
+              <id>{/interface/interface_number}.{/vlan_id}</id>
+              <service-policy>
+                <input>
+                  <name>PE-Policy</name>
+                </input>
+              </service-policy>
+            </GigabitEthernet>
+          </GigabitEthernet-subinterface>
+          <?end?>
+          <?if {/interface/interface_name = 'TenGigE'}?>
+          <TenGigE-subinterface>
+            <TenGigE>
+              <id>{/interface/interface_number}.{/vlan_id}</id>
+              <service-policy>
+                <input>
+                  <name>PE-Policy</name>
+                </input>
+              </service-policy>
+            </TenGigE>
+          </TenGigE-subinterface>
+          <?end?>
         </interface>
         <!-- End of section -->
         
         <!-- IOS-XR NETCONF NED section -->
         <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
           <interface>
-            <interface-name>{/interface/interface_name}{/interface/interface_number}</interface-name>
+            <interface-name>{/interface/interface_name}{/interface/interface_number}.{/vlan_id}</interface-name>
             <service-policy xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-service-policy-qos-cfg">
               <input>
                 <service-policy-name>PE-Policy</service-policy-name>

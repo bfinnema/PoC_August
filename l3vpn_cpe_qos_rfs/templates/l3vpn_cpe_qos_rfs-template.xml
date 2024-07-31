@@ -95,7 +95,7 @@
         </policy-map>
         <interface xmlns="urn:ios">
           <GigabitEthernet>
-            <name>{/interface/interface_number}</name>
+            <name>{/interface/interface_number}.{/vlan_id}</name>
             <service-policy>
               <output>CPE-Parent-Policy</output>
             </service-policy>

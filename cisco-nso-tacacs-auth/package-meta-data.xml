@@ -1,0 +1,6 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>cisco-nso-tacacs-auth</name>
+  <package-version>1.0</package-version>
+  <description>Python package for authenticating via TACACS+</description>
+  <ncs-min-version>6.2</ncs-min-version>
+</ncs-package>

@@ -111,6 +111,12 @@ class ServiceCallbacks(Service):
                 name = "L3VPN-QoS-"+str(endpoint.cpe_device)+"-"+str(endpoint.id)
                 vars.add('name', name)
                 template.apply('l3vpn_cpe_qos-template', vars)
+            
+            if endpoint.acl.enable_acl:
+                vars.add('acl_name', endpoint.acl.acl_name)
+                name = "L3VPN-ACL-"+str(endpoint.pe_device)+"-"+str(endpoint.id)
+                vars.add('name', name)
+                template.apply('l3vpn_pe_acl-template', vars)
 
 # ---------------------------------------------
 # COMPONENT THREAD THAT WILL BE STARTED BY NCS.

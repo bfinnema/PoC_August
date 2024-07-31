@@ -12,6 +12,9 @@ module l3vpn_cfs {
   import tailf-ncs {
     prefix ncs;
   }
+  import inventory {
+    prefix inventory;
+  }
 
   description
     "L3VPN CFS";
@@ -165,6 +168,20 @@ module l3vpn_cfs {
             enum 10240;
           }
           default 1024;
+        }
+      }
+
+      container acl {
+        leaf enable_acl {
+          type boolean;
+          default false;
+        }
+
+        leaf acl_name {
+          tailf:info "The ACL to be used.";
+          type leafref {
+            path "/inventory:inventory/inventory:access_lists/inventory:access_list/inventory:acl_name";
+          }
         }
       }
     }

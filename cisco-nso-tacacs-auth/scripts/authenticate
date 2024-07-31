@@ -1,0 +1,283 @@
+#!/home/bfinnema/ncs-run/pyvenv/bin/python
+
+# Cisco NSO package authentication with TACACS+:
+#
+# Reads TACACS+ servers configuration: host, port and secret ,from CDB.
+
+# INPUT
+# [user;password;orig_request;request;headers;body;src-ip;src-port;ctx;proto;]
+#       - data to use for login
+# - user: base64 encoded
+# - password: base64 encoded
+# - orig_request: not used
+# - request: not used
+# - headers: not used
+# - body:  not used
+# - src-ip: not used
+# - src-port: not used
+# - ctx: not used
+# - proto: not used
+
+# OUTPUT
+# "accept $groups $uid $gid $supplementary_gids $HOME\n" - authenticated user
+# "unknown 'reason'\n" - can't use supplied data to login
+# "reject 'reason'\n"- denied authentication
+# "abort 'reason'\n" - abort the entire authentication process
+
+
+import base64
+from ipaddress import ip_address, IPv4Address
+import logging
+import os
+import socket
+import sys
+
+from tacacs_plus.client import TACACSClient
+
+import ncs
+import _ncs
+
+# Constants
+NOBODY = "65534"
+NOGROUP = "65534"
+NODIR = "/nonexistent"
+
+# Setup logger
+# assume system install
+logdir = os.getenv("NCS_LOG_DIR")
+if logdir is None:
+    # fallback local install
+    logdir = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                          "../../../../../logs")
+
+logname = os.path.join(logdir, "ncs-python-tacacs-auth.log")
+if not os.path.isdir(logdir):
+    os.mkdir(logdir)
+
+logfmt = ("%(asctime)s.%(msecs)02d %(filename)s:%(lineno)s"
+          " %(levelname)s: %(message)s")
+logging.basicConfig(filename=logname, filemode="a+", format=logfmt,
+                    datefmt="%Y-%m-%d %H:%M:%S", level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+logger.debug('Starting TACACS+ authentication')
+
+def base64_to_str(b):
+    return base64.decodebytes(b.encode("utf-8")).decode("utf-8")
+
+
+def str_to_base64(s):
+    return base64.encodebytes(s.encode("utf-8")).decode("utf-8")
+
+
+class TacacsConfig():
+    def __init__(self, host, port, secret, timeout):
+        self.host = host
+        self.port = port
+        self.secret = secret
+        self.timeout = timeout
+
+        if type(ip_address(socket.gethostbyname(self.host))) == IPv4Address:
+            self.family = socket.AF_INET
+        else:
+            self.family = socket.AF_INET6
+
+
+def lookup_tacacs_server_config():
+    """Retrieve the tacacs host and secret stored within NSO"""
+
+    # Create NCS connection to read tacacs host details
+    logger.debug("Connecting to NSO to retrieve tacacs servers configuration")
+    with ncs.maapi.single_read_trans('admin', 'system') as trans:
+        m = ncs.maapi.Maapi()
+        m.install_crypto_keys()
+        root = ncs.maagic.get_root(trans)
+
+        # TACACS Servers Details
+        tacacs_servers = []
+        for config in root.cisco_nso_tacacs_auth__tacacs_auth.tacacs_server:
+            pswd = _ncs.decrypt(config.secret)
+            tc = TacacsConfig(config.host, config.port, pswd, config.timeout)
+            tacacs_servers.append(tc)
+            logger.debug(f"TACACS server: host={tc.host}, port={tc.port}, "
+                         f"secret={tc.secret}, timeout={tc.timeout}")
+
+    return tacacs_servers
+
+
+def authenticate_user(tacacs_cfg, username, password):
+    """Attempt authenticating, going through all TACACS servers"""
+    for tac_server in tacacs_cfg:
+        client = TACACSClient(host=tac_server.host, port=tac_server.port,
+                              secret=tac_server.secret,
+                              timeout=tac_server.timeout,
+                              family=tac_server.family)
+        logger.debug("Sending Authentication request to "
+                     f"{tac_server.host}:{tac_server.port}")
+
+        try:
+            authenticated = getattr(client.authenticate(username, password),
+                                    "valid", False)
+            if authenticated:
+                message = "Authentication Successful!"
+            else:
+                message = "Authentication Failed!"
+            logger.debug(message)
+            return authenticated, tac_server
+
+        except ValueError:
+            logger.error("Error performing authentication. Provided user "
+                         "credentials or TACACS secret incorrect.")
+        except socket.gaierror:
+            logger.error("Unable to find TACACS server")
+
+    return False, None
+
+
+def authorize_user(tac_server, username):
+    """Send TACACS Authorization request for a user.
+    Return result, message, and groups list"""
+
+    response, msg, member_of, uid, gid, home = False, "", [], "", "", ""
+    client = TACACSClient(host=tac_server.host, port=tac_server.port,
+                          secret=tac_server.secret,
+                          timeout=tac_server.timeout,
+                          family=tac_server.family)
+    logger.debug(f"Sending Authorization request to {tac_server.host}")
+
+    try:
+        author = client.authorize(username, arguments=[b"service=nso", b"cmd="])
+        if author.valid:
+            member_of, uid, gid, home = retrieve_authz_data(author.arguments)
+            if member_of:
+                response = True
+                msg = "Authorization Successful!"
+            else:
+                msg = ("Authorization successful, "
+                       "but no NSO authentication group assigned to the user")
+        else:
+            msg = "Error: Authorization Failed!"
+
+    except ValueError:
+        msg = ("Error performing authentication. "
+               "Provided user credentials or TACACS secret incorrect.")
+    except socket.gaierror:
+        msg = "Unable to find TACACS server"
+    except ConnectionRefusedError:
+        msg = "Connection refused to TACACS server"
+    except ConnectionResetError:
+        msg = "Connection reset by TACACS server"
+
+    return response, msg, member_of, uid, gid, home
+
+
+def retrieve_authz_data(arguments):
+    """Parse and return the nso:group list from Authorization arguments."""
+
+    nso_groups = []
+    uid = NOBODY
+    gid = NOGROUP
+    home = NODIR
+
+    for argument in arguments:
+        # Convert bytes to string
+        argument = argument.decode("utf-8")
+
+        # Only process the arguments with a key of "nso:group"
+        if "groups" in argument:
+            # Add the group name from argument to the list
+            nso_groups.extend(argument.split("=")[1].split())
+        if "uid" in argument:
+            uid = argument.split("=")[1]
+        if "gid" in argument:
+            gid = argument.split("=")[1]
+        if "home" in argument:
+            home = argument.split("=")[1]
+
+    return nso_groups, uid, gid, home
+
+
+def build_result(authenticated, authorized, nso_groups, uid, gid, home):
+    """Create appropriate result string for NSO to complete external auth"""
+
+    if not authenticated:
+        response = "reject Authentication Failed"
+    elif not authorized:
+        response = "reject Authentication Failed"
+    else:
+        response = f"accept {' '.join(nso_groups)} {uid} {gid} {home}"
+
+    return response
+
+
+def parse_args(args):
+    """
+    Parse args and put them in a dict.
+
+    See paragraph at top of file and NSO Package Authentication documentation
+    for details.
+    """
+    logger.debug(f"--- args to be parsed: {args}")
+    a = dict(zip(["user", "password", "orig_request", "request", "headers",
+                  "body", "srcip", "srcport", "ctx", "proto"],
+                 args.strip("[]").split(";")))
+    a["user"] = base64_to_str(a["user"])
+    a["password"] = base64_to_str(a["password"])
+    a["orig_request"] = base64_to_str(a["orig_request"])
+    a["request"] = base64_to_str(a["request"])
+    a["headers"] = base64_to_str(a["headers"])
+    a["body"] = base64_to_str(a["body"].replace("\n", ""))
+
+    logger.debug(f"--- parsed args: {a}")
+    return a
+
+
+def login(tacacs_cfg, args):
+    """Login a user"""
+
+    username = args["user"]
+    authn_result, server = authenticate_user(tacacs_cfg, username,
+                                             args["password"])
+
+    if authn_result:
+        # Attempt authorization on the host with succeeded authentication
+        authz_result, authz_message, groups, uid, gid, home = \
+                authorize_user(server, username)
+
+        if authz_result and groups:
+            msg = f"User {username} authorized for groups: {', '.join(groups)}"
+            logger.debug(msg)
+        else:
+            logger.debug(authz_message)
+            logger.debug(f"User {username} failed authorization.")
+    else:
+        authz_result = False
+        groups, uid, gid, home = [], "", "", ""
+        logger.debug(f"User {username} failed authentication.")
+
+    # Create final result string for NSO
+    result = build_result(authn_result, authz_result, groups, uid, gid, home)
+
+    # Log results of authentication attemp
+    logger.debug(f"Authentication result: '{result}'")
+
+    # Print results to screen for NSO to process
+    print(result)
+
+
+def main():
+    logger.debug("TACACS+: scripts/authenticate")
+
+    try:
+        args = parse_args(sys.stdin.readline())
+
+        # Retrieve TACACS host and secret from NSO CDB
+        tacacs_cfg = lookup_tacacs_server_config()
+
+        login(tacacs_cfg, args)
+
+    except Exception as e:
+        print(f"error '{e}'")
+
+
+if __name__ == "__main__":
+    main()

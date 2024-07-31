@@ -1,0 +1,44 @@
+module cwm-interface {
+  namespace "http://com/example/cwminterface";
+  prefix cwm-interface;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  list cwm-interface {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint "cwm-interface";
+
+    leaf name {
+      type string;
+    }
+
+    leaf-list device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf interface_id {
+      type string;
+    }
+
+    leaf description {
+      type string;
+    }
+
+    leaf interface_ip {
+      type inet:ip-address;
+    }
+
+    leaf interface_mask {
+      type inet:ip-address;
+    }
+  }
+}

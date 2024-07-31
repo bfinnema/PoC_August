@@ -72,6 +72,20 @@
             </access-list>
           </access-lists>
         </ipv4>
+        <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
+          <interface>
+            <interface-name>{/interface/interface_name}{/interface/interface_number}.{/vlan_id}</interface-name>
+            <ipv4>
+              <access-group xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-access-group-cfg">
+                <ingress>
+                  <access-list-name-1>
+                    <name>{$acl_name}</name>
+                  </access-list-name-1>
+                </ingress>
+              </access-group>
+            </ipv4>
+          </interface>
+        </interfaces>
       </config>
     </device>
   </devices>

@@ -3,6 +3,7 @@
         <name>{$name}</name>
         <device>{$cpe_device}</device>
         <bit_rate>{$cpe_bit_rate}</bit_rate>
+        <vlan_id>{$vlan_id}</vlan_id>
         <interface>
             <interface_name>{$cpe_interface_name}</interface_name>
             <interface_number>{$cpe_interface_number}</interface_number>

@@ -128,7 +128,7 @@
                 </address>
               </addresses>
             </ipv4>
-            <description>L3VPN with subinterface</description>
+            <description>{/interface/interface_description}</description>
             <vrf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-vrf-cfg">{/vrf_name}</vrf>
             <encapsulation xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg">
               <dot1q>

@@ -1,0 +1,22 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="cwm-interface">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <TenGigE>
+            <id>{/interface_id}</id>
+            <description>{/description}</description>
+            <ipv4>
+              <address>
+                <ip>{/interface_ip}</ip>
+                <mask>{/interface_mask}</mask>
+              </address>
+            </ipv4>
+          </TenGigE>
+        </interface>
+      </config>
+    </device>
+  </devices>
+</config-template>
