@@ -1,0 +1,34 @@
+  vrfs vrf ACME-VRF-41314
+   address-family ipv4 unicast import route-target two-byte-as-rts two-byte-as-rt 65020 1 false
+   !
+   address-family ipv4 unicast export route-target two-byte-as-rts two-byte-as-rt 65020 1 false
+   !
+   rd two-byte-as as-number 65020
+   rd two-byte-as index 1
+
+  routing-policy route-policies route-policy PASS-ALL
+   rpl-route-policy "route-policy PASS-ALL\n                pass\n              end-policy\n              "
+  !
+
+  Cisco-IOS-XR-um-interface-cfg:interfaces interface GigabitEthernet0/0/0/10.60
+   ipv4 addresses address address 192.168.2.1
+   ipv4 addresses address netmask 255.255.255.0
+   description "L3VPN interface to FGL231914T5, interface GigabitEthernet0/0/0"
+   vrf         ACME-VRF-41314
+   Cisco-IOS-XR-um-l2-ethernet-cfg:encapsulation dot1q vlan-id 60
+
+  Cisco-IOS-XR-um-router-bgp-cfg:router bgp as 100
+   vrfs vrf ACME-VRF-41314
+    address-families address-family ipv4-unicast
+     redistribute connected
+    !
+    neighbors neighbor 192.168.2.2
+     address-families address-family ipv4-unicast
+      route-policy in PASS-ALL
+      route-policy out PASS-ALL
+     !
+     remote-as 65020
+    !
+   !
+  !
+ !
