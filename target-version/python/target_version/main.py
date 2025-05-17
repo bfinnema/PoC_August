@@ -39,10 +39,10 @@ class CheckAction(Action):
                 version_found = None
                 if device.device_type.ne_type._name == 'cli':
                     version_found = device.platform.version
-                elif 'native' in device.live_status and 'version' in device.live_status.native:
+                elif hasattr(device.live_status, 'native') and hasattr(device.live_status.native, 'version'):
                     # IOS-XE netconf
                     version_found = device.live_status.native.version
-                elif 'platform-inventory' in device.live_status:
+                elif hasattr(device.live_status, 'platform_inventory'):
                     # IOS-XR netconf
                     version_found = device.live_status.platform_inventory.racks.rack['0'].attributes.basic_info.software_revision
                 
