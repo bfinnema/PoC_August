@@ -86,27 +86,27 @@ module l3vpn_cfs {
       mandatory true;
     }
 
-        container last-ping {
-          config false;
-          leaf when {
-            type string;
+    container last-ping {
+      config false;
+      leaf when {
+        type string;
+      }
+      list endpoint {
+        key id;
+        leaf id {
+          type leafref {
+              path ../../../endpoint/id ;
           }
-          list endpoint {
-            key id;
-            leaf id {
-              type leafref {
-                  path ../../../endpoint/id ;
-              }
-            }
-            leaf local-result {
-              type string;
-            }
-            leaf remote-result {
-              type string;
-            }
-          }
+        }
+        leaf local-result {
+          type string;
+        }
+        leaf remote-result {
+          type string;
+        }
+      }
 
-        }  
+    }  
 
     action ping-test {
       tailf:actionpoint l3vpn_cfs-ping-test;
@@ -138,6 +138,11 @@ module l3vpn_cfs {
       leaf cpe_loopback0_address {
         tailf:info "Address of the Loopback 0 interface of the CPE. The mask is assumed to be /32";
         type inet:ipv4-address;
+      }
+
+      leaf link_subnet {
+        tailf:info "Prefix to be used for the link between PE and CPE";
+        type string;
       }
 
       leaf vlan_id {
