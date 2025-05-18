@@ -104,7 +104,7 @@ class ServiceCallbacks(Service):
             vars.add('cpe_interface_description', cpe_interface_description)
             self.log.info('CPE IPv4 address: ', cpe_ipv4_address)
             vars.add('cpe_ipv4_address', cpe_ipv4_address)
-            vars.add('pe_ipv4_mask', ipv4_mask)
+            vars.add('cpe_ipv4_mask', ipv4_mask)
             # vars.add('cpe_ipv4_address', endpoint.cpe_interface.ipv4_address)
             # vars.add('cpe_ipv4_mask', endpoint.cpe_interface.ipv4_mask)
             template.apply('l3vpn_cpe-template', vars)
