@@ -1,0 +1,16 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <infra_isis_rfs xmlns="http://example.com/infra_isis_rfs">
+    <name>{$isis_rfs_name}</name>
+    <device>{$device}</device>
+    <net_id>{$net_id}</net_id>
+    <isis_process_id>{$isis_process_id}</isis_process_id>
+    <loopback0_ipv4_address>{$loopback0_ipv4_address}</loopback0_ipv4_address>
+    <interface>
+      <interface_name>{$interface_name}</interface_name>
+      <interface_number>{$interface_number}</interface_number>
+      <ipv4_address>{$ipv4_address}</ipv4_address>
+      <ipv4_mask>{$ipv4_mask}</ipv4_mask>
+      <interface_description>{$interface_description}</interface_description>
+    </interface>
+  </infra_isis_rfs>
+</config-template>

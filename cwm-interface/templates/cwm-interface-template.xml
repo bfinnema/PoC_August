@@ -5,6 +5,7 @@
       <name>{/device}</name>
       <config>
         <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if {/interface_name = 'TenGigE'}?>
           <TenGigE>
             <id>{/interface_id}</id>
             <description>{/description}</description>
@@ -15,6 +16,19 @@
               </address>
             </ipv4>
           </TenGigE>
+          <?end?>
+          <?if {/interface_name = 'GigabitEthernet'}?>
+          <GigabitEthernet>
+            <id>{/interface_id}</id>
+            <description>{/description}</description>
+            <ipv4>
+              <address>
+                <ip>{/interface_ip}</ip>
+                <mask>{/interface_mask}</mask>
+              </address>
+            </ipv4>
+          </GigabitEthernet>
+          <?end?>
         </interface>
       </config>
     </device>

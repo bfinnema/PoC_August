@@ -1,0 +1,69 @@
+module infra_mpls_rfs {
+
+  namespace "http://example.com/infra_mpls_rfs";
+  prefix infra_mpls_rfs;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Base infrastructure MPLS configuration";
+
+  revision 2024-03-01 {
+    description
+      "Initial revision.";
+  }
+
+  list infra_mpls_rfs {
+    description "This is an RFS skeleton service";
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint infra_mpls_rfs-servicepoint;
+
+    leaf router_id {
+      tailf:info "MPLS router ID";
+      type inet:ipv4-address;
+    }
+    leaf device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf interface_name {
+      tailf:info "Interface name. For example TenGigE.";
+      type enumeration {
+        enum FastEthernet;
+        enum GigabitEthernet;
+        enum TenGigE;
+        enum TwentyFiveGigE;
+        enum FortyGigE;
+        enum FiftyGigE;
+        enum HundredGigE;
+        enum TwoHundredGigE;
+        enum FourHundredGigE;
+        enum EightHundredGigE;
+      }
+    }
+    leaf interface_number {
+      tailf:info "Interface number. For example 0 or 1/0";
+      type string {
+        pattern "[0-9]{1,2}(/[0-9]{1,2}){1,4}";
+      }
+    }
+  }
+}

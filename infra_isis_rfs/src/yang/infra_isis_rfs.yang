@@ -1,0 +1,100 @@
+module infra_isis_rfs {
+
+  namespace "http://example.com/infra_isis_rfs";
+  prefix infra_isis_rfs;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Base infrastructure ISIS configuration";
+
+  revision 2024-03-01 {
+    description
+      "Initial revision.";
+  }
+
+  grouping interface_grouping {
+    leaf interface_name {
+      tailf:info "Interface name. For example TenGigE.";
+      type enumeration {
+        enum FastEthernet;
+        enum GigabitEthernet;
+        enum TenGigE;
+        enum TwentyFiveGigE;
+        enum FortyGigE;
+        enum FiftyGigE;
+        enum HundredGigE;
+        enum TwoHundredGigE;
+        enum FourHundredGigE;
+        enum EightHundredGigE;
+      }
+      mandatory true;
+    }
+    leaf interface_number {
+      tailf:info "Interface number. For example 0 or 1/0";
+      type string {
+        pattern "[0-9]{1,2}(/[0-9]{1,2}){1,4}";
+      }
+      mandatory true;
+    }
+    leaf ipv4_address {
+      tailf:info "Interface IPv4 address.";
+      type inet:ipv4-address;
+    }
+    leaf ipv4_mask {
+      tailf:info "Interface IPv4 mask.";
+      type inet:ipv4-address;
+    }
+    leaf interface_description {
+      tailf:info "Interface description.";
+      type string;
+    }
+  }
+
+  list infra_isis_rfs {
+    description "This is an RFS skeleton service";
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint infra_isis_rfs-servicepoint;
+
+    leaf device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf isis_process_id {
+      tailf:info "ISIS process ID";
+      type string;
+    }
+
+    leaf net_id {
+      tailf:info "ISIS NET ID Format sample 49.0002.2131.6711.5202.00";
+      type string;
+    }
+
+    leaf loopback0_ipv4_address {
+      tailf:info "IPv4 address of Loopback0";
+      type inet:ipv4-address;
+    }
+
+    container interface {
+      uses interface_grouping;
+    }
+  }
+}

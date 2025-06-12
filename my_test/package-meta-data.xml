@@ -1,0 +1,16 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>my_test</name>
+  <package-version>1.0</package-version>
+  <description>Package Generated</description>
+  <ncs-min-version>4.4</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>my_test.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

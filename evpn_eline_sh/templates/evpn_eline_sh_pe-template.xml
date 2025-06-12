@@ -1,0 +1,150 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$device}</name>
+      <config>
+      
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <GigabitEthernet>
+            <id>{$interface_number}</id>
+            <description>{$interface_description}</description>
+          </GigabitEthernet>
+          <GigabitEthernet-subinterface>
+            <GigabitEthernet>
+              <id>{$interface_number}.{$vlan_id}</id>
+              <mode>l2transport</mode>
+              <description>{$subinterface_description}</description>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{$vlan_id}</vlan-id>
+                </dot1q>
+              </encapsulation>
+            </GigabitEthernet>
+          </GigabitEthernet-subinterface>
+        </interface>
+        <l2vpn xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <xconnect>
+            <group>
+              <name>evpn-vpws</name>
+              <p2p>
+                <name>{$evpn_name}</name>
+                <interface>
+                  <name>{$interface_name}{$interface_number}.{$vlan_id}</name>
+                </interface>
+                <neighbor-evpn>
+                  <neighbor>
+                    <evpn>
+                      <evi>{$evi_id}</evi>
+                      <target>{$remote_ac_id}</target>
+                      <source>{$source_ac_id}</source>
+                    </evpn>
+                  </neighbor>
+                </neighbor-evpn>
+              </p2p>
+            </group>
+          </xconnect>
+        </l2vpn>
+
+        <!-- <interface-configurations xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ifmgr-cfg">
+          <interface-configuration>
+            <active>act</active>
+            <interface-name>{$interface_name}{$interface_number}</interface-name>
+            <description>{$interface_description}</description>
+          </interface-configuration>
+          <interface-configuration>
+            <active>act</active>
+            <interface-name>{$interface_name}{$interface_number}.{$vlan_id}</interface-name>
+            <interface-mode-non-physical>l2-transport</interface-mode-non-physical>
+            <description>{$subinterface_description}</description>
+            <ethernet-service xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-l2-eth-infra-cfg">
+              <encapsulation>
+              <outer-tag-type>match-dot1q</outer-tag-type>
+              <outer-range1-low>{$vlan_id}</outer-range1-low>
+              </encapsulation>
+            </ethernet-service>
+          </interface-configuration>
+        </interface-configurations>
+        <l2vpn xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-cfg">
+          <enable></enable>
+          <database>
+          <xconnect-groups>
+            <xconnect-group>
+            <name>evpn-vpws</name>
+            <p2p-xconnects>
+              <p2p-xconnect>
+              <name>{$evpn_name}</name>
+              <attachment-circuits>
+                <attachment-circuit>
+                <name>{$interface_name}{$interface_number}.{$vlan_id}</name>
+                <enable></enable>
+                </attachment-circuit>
+              </attachment-circuits>
+              <pseudowire-evpns>
+                <pseudowire-evpn>
+                <eviid>{$evi_id}</eviid>
+                <remote-acid>{$remote_ac_id}</remote-acid>
+                <source-acid>{$source_ac_id}</source-acid>
+                </pseudowire-evpn>
+              </pseudowire-evpns>
+              </p2p-xconnect>
+            </p2p-xconnects>
+            </xconnect-group>
+          </xconnect-groups>
+          </database>
+        </l2vpn>  -->
+
+        <l2vpn xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2vpn-cfg">
+          <xconnect>
+          <groups>
+            <group>
+            <group-name>evpn-vpws</group-name>
+            <p2ps>
+              <p2p>
+              <p2p-xconnect-name>{$evpn_name}</p2p-xconnect-name>
+              <interfaces>
+                <interface>
+                <interface-name>{$interface_name}{$interface_number}.{$vlan_id}</interface-name>
+                </interface>
+              </interfaces>
+              <neighbor>
+                <evpn>
+                <evi>
+                  <targets>
+                  <target>
+                    <vpn-id>{$evi_id}</vpn-id>
+                    <remote-ac-id>{$remote_ac_id}</remote-ac-id>
+                    <source>{$source_ac_id}</source>
+                  </target>
+                  </targets>
+                </evi>
+                </evpn>
+              </neighbor>
+              </p2p>
+            </p2ps>
+            </group>
+          </groups>
+          </xconnect>
+        </l2vpn>
+        <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
+          <interface>
+          <interface-name>{$interface_name}{$interface_number}</interface-name>
+          <description>{$interface_description}</description>
+          </interface>
+          <interface>
+          <interface-name>{$interface_name}{$interface_number}.{$vlan_id}</interface-name>
+          <sub-interface-type>
+            <l2transport/>
+          </sub-interface-type>
+          <description>{$subinterface_description}</description>
+          <l2transport-encapsulation xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg">
+            <dot1q>
+            <vlan-id>{$vlan_id}</vlan-id>
+            </dot1q>
+          </l2transport-encapsulation>
+          </interface>
+        </interfaces>
+
+      </config>
+    </device>
+  </devices>
+</config-template>

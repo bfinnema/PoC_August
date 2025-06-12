@@ -1,0 +1,184 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+
+        <interface-configurations xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ifmgr-cfg">
+          <interface-configuration>
+          <active>act</active>
+          <interface-name>Bundle-Ether10</interface-name>
+          <interface-virtual></interface-virtual>
+          <description>EVPN-VPWS Multi-Homed</description>
+          <ipv4-network xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-io-cfg">
+            <addresses>
+            <primary>
+              <address>172.16.10.13</address>
+              <netmask>255.255.255.0</netmask>
+            </primary>
+            </addresses>
+          </ipv4-network>
+          </interface-configuration>
+          <interface-configuration>
+          <active>act</active>
+          <interface-name>Bundle-Ether10.2</interface-name>
+          <interface-mode-non-physical>l2-transport</interface-mode-non-physical>
+          <description>EVPN-VPWS Multi-Homed subif-2</description>
+          <ethernet-service xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-l2-eth-infra-cfg">
+            <encapsulation>
+            <outer-tag-type>match-dot1q</outer-tag-type>
+            <outer-range1-low>2</outer-range1-low>
+            </encapsulation>
+          </ethernet-service>
+          </interface-configuration>
+          <interface-configuration>
+          <active>act</active>
+          <interface-name>GigabitEthernet0/0/0/8</interface-name>
+          <description>To CE3 for VPWS Multi-Homed</description>
+          <bundle-member xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-bundlemgr-cfg">
+            <id>
+            <bundle-id>10</bundle-id>
+            <port-activity>on</port-activity>
+            </id>
+          </bundle-member>
+          </interface-configuration>
+        </interface-configurations>
+        <l2vpn xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-cfg">
+          <enable></enable>
+          <database>
+          <xconnect-groups>
+            <xconnect-group>
+            <name>evpn-vpws</name>
+            <p2p-xconnects>
+              <p2p-xconnect>
+              <name>e1_5-6</name>
+              <attachment-circuits>
+                <attachment-circuit>
+                <name>Bundle-Ether10.2</name>
+                <enable></enable>
+                </attachment-circuit>
+              </attachment-circuits>
+              <pseudowire-evpns>
+                <pseudowire-evpn>
+                <eviid>1</eviid>
+                <remote-acid>5</remote-acid>
+                <source-acid>6</source-acid>
+                </pseudowire-evpn>
+              </pseudowire-evpns>
+              </p2p-xconnect>
+            </p2p-xconnects>
+            </xconnect-group>
+          </xconnect-groups>
+          </database>
+        </l2vpn> 
+        <evpn xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-cfg">
+          <enable></enable>
+          <evpn-tables>
+          <evpn-interfaces>
+            <evpn-interface>
+            <interface-name>Bundle-Ether10</interface-name>
+            <ethernet-segment>
+              <enable></enable>
+              <identifier>
+              <type>type0</type>
+              <esi>00.01.00.ac.ce.55.00.0a.00</esi>
+              </identifier>
+              <load-balancing-mode>single-active</load-balancing-mode>
+            </ethernet-segment>
+            </evpn-interface>
+          </evpn-interfaces>
+          </evpn-tables>
+        </evpn>
+
+        <evpn xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2vpn-cfg">
+          <interface>
+          <interface>
+            <interface-name>Bundle-Ether10</interface-name>
+            <ethernet-segment>
+            <identifier>
+              <type>
+              <zero>
+                <esi>00.01.00.ac.ce.55.00.0a.00</esi>
+              </zero>
+              </type>
+            </identifier>
+            <load-balancing-mode>
+              <single-active/>
+            </load-balancing-mode>
+            </ethernet-segment>
+          </interface>
+          </interface>
+        </evpn>
+        <l2vpn xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2vpn-cfg">
+          <xconnect>
+          <groups>
+            <group>
+            <group-name>evpn-vpws</group-name>
+            <p2ps>
+              <p2p>
+              <p2p-xconnect-name>e1_5-6</p2p-xconnect-name>
+              <interfaces>
+                <interface>
+                <interface-name>Bundle-Ether10.2</interface-name>
+                </interface>
+              </interfaces>
+              <neighbor>
+                <evpn>
+                <evi>
+                  <targets>
+                  <target>
+                    <vpn-id>1</vpn-id>
+                    <remote-ac-id>5</remote-ac-id>
+                    <source>6</source>
+                  </target>
+                  </targets>
+                </evi>
+                </evpn>
+              </neighbor>
+              </p2p>
+            </p2ps>
+            </group>
+          </groups>
+          </xconnect>
+        </l2vpn>
+        <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
+          <interface>
+          <interface-name>Bundle-Ether10</interface-name>
+          <description>EVPN-VPWS Multi-Homed</description>
+          <ipv4>
+            <addresses xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg">
+            <address>
+              <address>172.16.10.13</address>
+              <netmask>255.255.255.0</netmask>
+            </address>
+            </addresses>
+          </ipv4>
+          </interface>
+          <interface>
+          <interface-name>Bundle-Ether10.2</interface-name>
+          <sub-interface-type>
+            <l2transport/>
+          </sub-interface-type>
+          <description>EVPN-VPWS Multi-Homed subif-2</description>
+          <l2transport-encapsulation xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg">
+            <dot1q>
+            <vlan-id>2</vlan-id>
+            </dot1q>
+          </l2transport-encapsulation>
+          </interface>
+          <interface>
+          <interface-name>GigabitEthernet0/0/0/8</interface-name>
+          <description>To CE3 for VPWS Multi-Homed</description>
+          <bundle xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-bundle-cfg">
+            <id>
+            <bundle-id>10</bundle-id>
+            <mode>on</mode>
+            </id>
+          </bundle>
+          </interface>
+        </interfaces>
+
+      </config>
+    </device>
+  </devices>
+</config-template>

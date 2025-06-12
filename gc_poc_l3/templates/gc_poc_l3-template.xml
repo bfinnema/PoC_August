@@ -1,0 +1,529 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/link/pe/device}</name>
+      <config>
+      <!-- ############ IOS-XR NETCONF NED ############ -->
+        <!-- VRF - It is assumed that it exists!!!!!!!!!!!!!!   -->
+        <!-- <vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-vrf-cfg">
+          <vrf>
+            <vrf-name>{/vrf-name}</vrf-name>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <import xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+                    <route-target>
+                      <two-byte-as-rts>
+                        <two-byte-as-rt>
+                          <as-number>{/link/routing/bgp/remote-as}</as-number>
+                          <index>{$INDEX}</index>
+                          <stitching>false</stitching>
+                        </two-byte-as-rt>
+                      </two-byte-as-rts>
+                    </route-target>
+                  </import>
+                  <export xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+                    <route-target>
+                      <two-byte-as-rts>
+                        <two-byte-as-rt>
+                          <as-number>{/link/routing/bgp/remote-as}</as-number>
+                          <index>{$INDEX}</index>
+                          <stitching>false</stitching>
+                        </two-byte-as-rt>
+                      </two-byte-as-rts>
+                    </route-target>
+                  </export>
+                </unicast>
+              </ipv4>
+            </address-family>
+            <rd xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+              <two-byte-as>
+                <as-number>{/link/routing/bgp/remote-as}</as-number>
+                <index>{$INDEX}</index>
+              </two-byte-as>
+            </rd>
+          </vrf>
+        </vrfs> -->
+
+        <!-- INTERFACES -->
+        <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg">
+          <interface>
+            <interface-name>{$RESERVED_IF_NAME}{$RESERVED_IF_NUMBER}</interface-name>
+            <description>{$RESERVED_IF_DESCRIPTION}</description>
+          </interface>
+          <interface>
+            <interface-name>{$PE_IF_NAME}{$PE_IF_NUMBER}</interface-name>
+            <service-policy xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-service-policy-qos-cfg">
+              <input>
+                <service-policy-name>{$IF_SERVICE_POLICY_IN}</service-policy-name>
+                <account>user-defined</account>
+                <account-user-defined>-22</account-user-defined>
+              </input>
+              <output>
+                <service-policy-name>{$IF_SERVICE_POLICY_OUT}</service-policy-name>
+                <account>user-defined</account>
+                <account-user-defined>-22</account-user-defined>
+              </output>
+            </service-policy>
+            <ipv4>
+              <addresses xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg">
+                <address>
+                  <address>{$PE_IF_IPV4}</address>
+                  <netmask>{$PE_IF_MASK}</netmask>
+                </address>
+              </addresses>
+              <mtu xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ipv4-cfg">1700</mtu>
+              <access-group xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-access-group-cfg">
+                <ingress>
+                  <access-list-name-1>
+                    <name>{$ACL_NAME}</name>
+                  </access-list-name-1>
+                </ingress>
+              </access-group>
+            </ipv4>
+            <mtu>{/link/pe/ipv4/mtu-size}</mtu>
+            <description>{$PE_IF_DESCRIPTION}</description>
+            <vrf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-vrf-cfg">{/vrf-name}</vrf>
+            <shutdown tags="delete"/>
+            <!-- <shutdown xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" nc:operation="delete"/> -->
+          </interface>
+        </interfaces>
+
+        <!-- PREFIX-SET-->
+        <routing-policy xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-route-policy-cfg">
+          <sets>
+            <prefix-sets>
+              <prefix-set>
+                <set-name>Inet-GC70001838</set-name>
+                <rpl-prefix-set>prefix-set Inet-GC70001838
+  5.179.88.28/32
+end-set
+</rpl-prefix-set>
+              </prefix-set>
+            </prefix-sets>
+          </sets>
+        </routing-policy>
+
+        <!-- OBJECT-GROUP - It is assumed that it exists prior to service instance deployment !!!!!!!!!!!!!!    -->
+        <!-- <object-group xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-object-group-cfg">
+          <network>
+            <ipv4s>
+              <ipv4>
+                <ipv4-object-group-name>RFC-1918-ACL</ipv4-object-group-name>
+                <ip-addresses>
+                  <ip-address>
+                    <address>10.0.0.0</address>
+                    <length>8</length>
+                  </ip-address>
+                  <ip-address>
+                    <address>172.16.0.0</address>
+                    <length>12</length>
+                  </ip-address>
+                  <ip-address>
+                    <address>192.168.0.0</address>
+                    <length>16</length>
+                  </ip-address>
+                </ip-addresses>
+              </ipv4>
+            </ipv4s>
+          </network>
+        </object-group> -->
+
+        <!-- ACCESS-LIST -->
+        <ipv4 xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-ipv4-access-list-cfg">
+          <access-lists>
+            <access-list>
+              <access-list-name>{$ACL_NAME}</access-list-name>
+              <sequences>
+                <sequence>
+                  <sequence-number>10</sequence-number>
+                  <remark>{$ACL_DESCRIPTION}</remark>
+                </sequence>
+                <sequence>
+                  <sequence-number>20</sequence-number>
+                  <permit>
+                    <protocol>ipv4</protocol>
+                    <source>
+                      <address>{$PE_IF_IPV4}</address>
+                      <prefix-length>{$PE_IF_CIDR_MASK}</prefix-length>
+                    </source>
+                    <destination>
+                      <any/>
+                    </destination>
+                  </permit>
+                </sequence>
+                <sequence>
+                  <sequence-number>30</sequence-number>
+                  <permit>
+                    <protocol>udp</protocol>
+                    <source>
+                      <any/>
+                      <port>
+                        <eq>BootPC</eq>
+                      </port>
+                    </source>
+                    <destination>
+                      <host>255.255.255.255</host>
+                      <port>
+                        <eq>BootPS</eq>
+                      </port>
+                    </destination>
+                  </permit>
+                </sequence>
+                <sequence>
+                  <sequence-number>40</sequence-number>
+                  <deny>
+                    <protocol>ipv4</protocol>
+                    <source>
+                      <net-group>RFC-1918-ACL</net-group>
+                    </source>
+                    <destination>
+                      <any/>
+                    </destination>
+                  </deny>
+                </sequence>
+                <sequence>
+                  <sequence-number>50</sequence-number>
+                  <deny>
+                    <protocol>ipv4</protocol>
+                    <source>
+                      <any/>
+                    </source>
+                    <destination>
+                      <any/>
+                    </destination>
+                  </deny>
+                </sequence>
+              </sequences>
+            </access-list>
+          </access-lists>
+        </ipv4>
+
+        <!-- BGP -->
+        <router xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+          <bgp>
+            <as>
+              <as-number>{$AS_NUMBER}</as-number>
+              <vrfs>
+                <vrf>
+                  <vrf-name>{/vrf-name}</vrf-name>
+                  <address-families>
+                    <address-family>
+                      <af-name>ipv4-unicast</af-name>
+                    </address-family>
+                  </address-families>
+                  <neighbors>
+                    <neighbor>
+                      <neighbor-address>{$CE_IF_IPV4}</neighbor-address>
+                      <address-families>
+                        <address-family>
+                          <af-name>ipv4-unicast</af-name>
+                          <maximum-prefix>
+                            <prefix-limit>10</prefix-limit>
+                            <threshold>75</threshold>
+                            <restart>5</restart>
+                          </maximum-prefix>
+                          <route-policy>
+                            <!-- It is assumed that these route policies exist in advance of service instance deployment -->
+                            <in>{$BGP_ROUTE_POLICY_IN}</in>
+                            <out>DEFAULT-ROUTE</out>
+                          </route-policy>
+                          <soft-reconfiguration>
+                            <inbound>
+                              <always/>
+                            </inbound>
+                          </soft-reconfiguration>
+                        </address-family>
+                      </address-families>
+                      <remote-as>{/link/routing/bgp/remote-as}</remote-as>
+                      <description>{$BGP_NEIGHBOR_DESCRIPTION}</description>
+                      <timers>
+                        <keepalive-interval>40</keepalive-interval>
+                        <holdtime>120</holdtime>
+                      </timers>
+                    </neighbor>
+                  </neighbors>
+                </vrf>
+              </vrfs>
+            </as>
+          </bgp>
+        </router>
+
+        <!-- DHCP -->
+        <dhcp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-dhcp-ipv4-cfg">
+          <ipv4>
+            <!-- It is assumed that the profile exist in advance of the service instance deployment -->
+            <!-- <profiles>
+              <profile>
+                <profile-name>Internet-DYNAMIC-SERVERS</profile-name>
+                <relay>
+                  <helper-address>
+                    <vrfs>
+                      <vrf>
+                        <vrf-name>default</vrf-name>
+                        <ip-addresses>
+                          <ip-address>
+                            <address>1.2.3.4</address>
+                          </ip-address>
+                        </ip-addresses>
+                      </vrf>
+                    </vrfs>
+                  </helper-address>
+                </relay>
+              </profile>
+            </profiles> -->
+            <interfaces>
+              <interface>
+                <interface-name>{$PE_IF_NAME}{$PE_IF_NUMBER}</interface-name>
+                <relay>
+                  <profile>Internet-DYNAMIC-SERVERS</profile>
+                </relay>
+              </interface>
+            </interfaces>
+          </ipv4>
+        </dhcp>
+
+      <!-- ############ IOS-XR CLI NED ############ -->
+        <!-- VRF -->
+        <!-- <vrf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf-list>
+            <name>{/vrf-name}</name>
+            <rd>{/link/routing/bgp/remote-as}:{$INDEX}</rd>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <import>
+                    <route-target>
+                      <address-list>
+                        <name>{/link/routing/bgp/remote-as}:{$INDEX}</name>
+                      </address-list>
+                    </route-target>
+                  </import>
+                  <export>
+                    <route-target>
+                      <address-list>
+                        <name>{/link/routing/bgp/remote-as}:{$INDEX}</name>
+                      </address-list>
+                    </route-target>
+                  </export>
+                </unicast>
+              </ipv4>
+            </address-family>
+          </vrf-list>
+        </vrf> -->
+
+        <!-- INTERFACES -->
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if {starts-with($RESERVED_IF_NAME,'Gigabit')}?>
+            <GigabitEthernet>
+              <id>{$RESERVED_IF_NUMBER}</id>
+              <description>{$RESERVED_IF_DESCRIPTION}</description>
+            </GigabitEthernet>
+          <?end?>
+          <?if {starts-with($RESERVED_IF_NAME,'TenGig')}?>
+            <TenGigE>
+              <id>{$RESERVED_IF_NUMBER}</id>
+              <description>{$RESERVED_IF_DESCRIPTION}</description>
+            </TenGigE>
+          <?end?>
+        </interface>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if {starts-with($PE_IF_NAME,'Gigabit')}?>
+            <GigabitEthernet>
+              <id>{$PE_IF_NUMBER}</id>
+              <description>{$PE_IF_DESCRIPTION}</description>
+              <mtu>{/link/pe/ipv4/mtu-size}</mtu>
+              <vrf>{/vrf-name}</vrf>
+              <ipv4>
+                <address>
+                  <ip>{$PE_IF_IPV4}</ip>
+                  <mask>{$PE_IF_MASK}</mask>
+                </address>
+                <access-group>
+                  <direction>ingress</direction>
+                  <name>{$ACL_NAME}</name>
+                </access-group>
+                <mtu>1700</mtu>
+              </ipv4>
+              <service-policy>
+                <input>
+                  <name>{$IF_SERVICE_POLICY_IN}</name>
+                  <account>
+                    <user-defined>-22</user-defined>
+                  </account>
+                </input>
+                <output>
+                  <name>{$IF_SERVICE_POLICY_OUT}</name>
+                  <account>
+                    <user-defined>-22</user-defined>
+                  </account>
+                </output>
+              </service-policy>
+              <shutdown tags="delete"/>
+            </GigabitEthernet>
+          <?end?>
+          <?if {starts-with($PE_IF_NAME,'TenGig')}?>
+            <TenGigE>
+              <id>{$PE_IF_NUMBER}</id>
+              <description>{$PE_IF_DESCRIPTION}</description>
+              <mtu>{/link/pe/ipv4/mtu-size}</mtu>
+              <vrf>{/vrf-name}</vrf>
+              <ipv4>
+                <address>
+                  <ip>{$PE_IF_IPV4}</ip>
+                  <mask>{$PE_IF_MASK}</mask>
+                </address>
+                <access-group>
+                  <direction>ingress</direction>
+                  <name>{$ACL_NAME}</name>
+                </access-group>
+                <mtu>1700</mtu>
+              </ipv4>
+              <service-policy>
+                <input>
+                  <name>{$IF_SERVICE_POLICY_IN}</name>
+                  <account>
+                    <user-defined>-22</user-defined>
+                  </account>
+                </input>
+                <output>
+                  <name>{$IF_SERVICE_POLICY_OUT}</name>
+                  <account>
+                    <user-defined>-22</user-defined>
+                  </account>
+                </output>
+              </service-policy>
+              <shutdown tags="delete"/>
+            </TenGigE>
+          <?end?>
+        </interface>
+
+        <!-- PREFIX-SET -->
+        <prefix-set xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>{$PREFIX_SET_NAME}</name>
+          <set>
+            <value>{$PE_IF_IPV4}/32</value>
+          </set>
+        </prefix-set>
+
+        <!-- OBJECT-GROUP  - It is assumed that it exists prior to service instance deployment !!!!!!!!!!!!!!  -->
+        <!-- <object-group xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <network>
+            <ipv4>
+              <name>RFC-1918-ACL</name>
+              <prefix-list>
+                <prefix>10.0.0.0/8</prefix>
+              </prefix-list>
+              <prefix-list>
+                <prefix>172.16.0.0/12</prefix>
+              </prefix-list>
+              <prefix-list>
+                <prefix>192.168.0.0/16</prefix>
+              </prefix-list>
+            </ipv4>
+          </network>
+        </object-group> -->
+
+        <!-- ACCESS-LIST -->
+        <ipv4 xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <access-list>
+            <named-acl>
+              <name>{$ACL_NAME}</name>
+              <rule>
+                <id>10</id>
+                <line>remark {$ACL_DESCRIPTION}</line>
+              </rule>
+              <rule>
+                <id>20</id>
+                <line>permit ipv4 {$PE_IF_IPV4}/{$PE_IF_CIDR_MASK} any</line>
+              </rule>
+              <rule>
+                <id>30</id>
+                <line>permit udp any eq bootpc host 255.255.255.255 eq bootps</line>
+              </rule>
+              <rule>
+                <id>40</id>
+                <line>deny ipv4 net-group RFC-1918-ACL any</line>
+              </rule>
+              <rule>
+                <id>50</id>
+                <line>deny ipv4 any any</line>
+              </rule>
+            </named-acl>
+          </access-list>
+        </ipv4>
+
+        <!-- BGP -->
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bgp>
+            <bgp-no-instance>
+              <id>{$AS_NUMBER}</id>
+              <vrf>
+                <name>{/vrf-name}</name>
+                <address-family>
+                  <ipv4>
+                    <unicast/>
+                  </ipv4>
+                </address-family>
+                <neighbor>
+                  <id>{$CE_IF_IPV4}</id>
+                  <remote-as>{/link/routing/bgp/remote-as}</remote-as>
+                  <timers>
+                    <keepalive>40</keepalive>
+                    <holdtime>120</holdtime>
+                  </timers>
+                  <description>{$BGP_NEIGHBOR_DESCRIPTION}</description>
+                  <address-family>
+                    <ipv4>
+                      <unicast>
+                        <!-- It is assumed that these route policies exist in advance of service instance deployment -->
+                        <route-policy>
+                          <direction>in</direction>
+                          <name>{$BGP_ROUTE_POLICY_IN}</name>
+                        </route-policy>
+                        <route-policy>
+                          <direction>out</direction>
+                          <name>DEFAULT-ROUTE</name>
+                        </route-policy>
+                        <soft-reconfiguration>
+                          <inbound>
+                            <type>always</type>
+                          </inbound>
+                        </soft-reconfiguration>
+                        <maximum-prefix>
+                          <max-prefix-limit>10</max-prefix-limit>
+                          <threshold>75</threshold>
+                          <restart>5</restart>
+                        </maximum-prefix>
+                      </unicast>
+                    </ipv4>
+                  </address-family>
+                </neighbor>
+              </vrf>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+
+        <!-- DHCP -->
+        <dhcp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ipv4>
+            <!-- It is assumed that the profile exist in advance of the service instance deployment -->
+            <!-- <profile>
+              <name>Internet-DYNAMIC-SERVERS</name>
+              <type>relay</type>
+              <helper-address>
+                <vrf>default</vrf>
+                <address>1.2.3.4</address>
+              </helper-address>
+            </profile> -->
+            <interface>
+              <name>{$PE_IF_NAME}{$PE_IF_NUMBER}</name>
+              <type>relay</type>
+              <profile>Internet-DYNAMIC-SERVERS</profile>
+            </interface>
+          </ipv4>
+        </dhcp>
+      </config>
+    </device>
+  </devices>
+</config-template>

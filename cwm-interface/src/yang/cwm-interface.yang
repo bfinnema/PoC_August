@@ -29,6 +29,10 @@ module cwm-interface {
       type string;
     }
 
+    leaf interface_name {
+      type string;
+    }
+
     leaf description {
       type string;
     }

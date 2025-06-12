@@ -1,0 +1,42 @@
+module yang-playground {
+  namespace "http://com/example/yangplayground";
+  prefix ypg;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  container level1 {
+     container level2 {
+	leaf-list level3 {
+           type string;
+        }
+     }
+  }
+
+  list yang-playground {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint "yang-playground";
+
+    leaf name {
+      type string;
+    }
+
+    // may replace this with other ways of refering to the devices.
+    leaf-list device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    // replace with your own stuff here
+    leaf dummy {
+      type inet:ipv4-address;
+    }
+  }
+}

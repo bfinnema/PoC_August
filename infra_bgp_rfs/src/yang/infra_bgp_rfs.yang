@@ -1,0 +1,64 @@
+module infra_bgp_rfs {
+
+  namespace "http://example.com/infra_bgp_rfs";
+  prefix infra_bgp_rfs;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Base infrastructure BGP configuration";
+
+  revision 2024-03-01 {
+    description
+      "Initial revision.";
+  }
+
+  list infra_bgp_rfs {
+    description "This is an RFS skeleton service";
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint infra_bgp_rfs-servicepoint;
+
+    leaf device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf as_number {
+      tailf:info "Autonomous System number eg 65000";
+      type uint16;
+      mandatory true;
+    }
+
+    leaf bgp_router_id {
+      tailf:info "BGP router id, we use the IPv4 address of loopback0";
+      type inet:ipv4-address;
+    }
+
+    leaf rr1_ipv4_address {
+      tailf:info "Address of Route Reflector 1";
+      type inet:ipv4-address;
+    }
+
+    leaf rr2_ipv4_address {
+      tailf:info "Address of Route Reflector 2";
+      type inet:ipv4-address;
+    }
+  }
+}

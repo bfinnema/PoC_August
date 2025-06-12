@@ -1,0 +1,35 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{device}</name>
+      <config>
+        <mpls xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-mpls-ldp-cfg">
+          <ldp>
+            <router-id>{router_id}</router-id>
+            <log>
+              <neighbor/>
+              <nsr/>
+              <graceful-restart/>
+            </log>
+            <interfaces>
+              <interface>
+                <interface-name>{interface_name}{interface_number}</interface-name>
+              </interface>
+            </interfaces>
+          </ldp>
+        </mpls>
+        <mpls xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ldp>
+            <log>
+              <neighbor/>
+            </log>
+            <router-id>{router_id}</router-id>
+            <interface>
+              <name>{interface_name}{interface_number}</name>
+            </interface>
+          </ldp>
+        </mpls>
+      </config>
+    </device>
+  </devices>
+</config-template>

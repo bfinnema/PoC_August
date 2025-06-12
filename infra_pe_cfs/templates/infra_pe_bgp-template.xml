@@ -1,0 +1,10 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <infra_bgp_rfs xmlns="http://example.com/infra_bgp_rfs">
+    <name>{$bgp_rfs_name}</name>
+    <device>{$device}</device>
+    <as_number>{$as_number}</as_number>
+    <bgp_router_id>{$bgp_router_id}</bgp_router_id>
+    <rr1_ipv4_address>{$rr1_ipv4_address}</rr1_ipv4_address>
+    <rr2_ipv4_address>{$rr2_ipv4_address}</rr2_ipv4_address>
+  </infra_bgp_rfs>
+</config-template>

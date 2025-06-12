@@ -1,0 +1,164 @@
+module evpn_eline_sh {
+
+  namespace "http://example.com/evpn_eline_sh";
+  prefix evpn_eline_sh;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "EVPN ELINE (VPWS) service, single homed";
+
+  revision 2025-03-30 {
+    description
+      "Initial revision.";
+  }
+
+  grouping interface_grouping {
+    leaf interface_name {
+      tailf:info "Interface name. For example TenGigE.";
+      type enumeration {
+        enum FastEthernet;
+        enum GigabitEthernet;
+        enum TenGigE;
+        enum TwentyFiveGigE;
+        enum FortyGigE;
+        enum FiftyGigE;
+        enum HundredGigE;
+        enum TwoHundredGigE;
+        enum FourHundredGigE;
+        enum EightHundredGigE;
+        enum xe;
+      }
+    }
+    leaf interface_number {
+      tailf:info "Interface number. For example 0 or 1/0";
+      type string {
+        pattern "[0-9]{1,2}(/[0-9]{1,2}){1,4}";
+      }
+    }
+    leaf ipv4_address {
+      tailf:info "Interface IPv4 address.";
+      type inet:ipv4-address;
+    }
+    leaf ipv4_mask {
+      tailf:info "Interface IPv4 mask.";
+      type inet:ipv4-address;
+    }
+    leaf interface_description {
+      tailf:info "Interface description.";
+      type string;
+    }
+  }
+
+  list evpn_eline_sh {
+    description "This is an RFS skeleton service";
+
+    key evpn_name;
+    leaf evpn_name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint evpn_eline_sh-servicepoint;
+
+    leaf ce_config_or_not {
+      tailf:info "Should the CE's be configured or not.";
+      type boolean;
+      default true;
+    }
+
+    container pe_a_device {
+      tailf:info "PE A device and interface config";
+      leaf device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      leaf vlan_id {
+        tailf:info "VLAN ID to be used as sub-interface number and for dot1q encapsulation";
+        type uint16;
+      }
+
+      container interface {
+        tailf:info "PE A interface config. IP address and mask not needed";
+        uses interface_grouping;
+      }
+    }
+
+    container pe_z_device {
+      tailf:info "PE Z device and interface config";
+      leaf device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      leaf vlan_id {
+        tailf:info "VLAN ID to be used as sub-interface number and for dot1q encapsulation";
+        type uint16;
+      }
+
+      container interface {
+        tailf:info "PE Z interface config. IP address and mask not needed";
+        uses interface_grouping;
+      }
+    }
+
+    container ce_a_device {
+      tailf:info "CE A device and interface config";
+      leaf device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      container interface {
+        tailf:info "CE A interface config.";
+        uses interface_grouping;
+      }
+    }
+
+    container ce_z_device {
+      tailf:info "CE Z device and interface config";
+      leaf device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      container interface {
+        tailf:info "CE Z interface config.";
+        uses interface_grouping;
+      }
+    }
+
+    leaf evi_id {
+      tailf:info "EVI ID";
+      type uint16;
+      mandatory true;
+    }
+
+    leaf ac1_id {
+      tailf:info "ID of the attachment circuit in one end";
+      type uint16;
+      mandatory true;
+    }
+
+    leaf ac2_id {
+      tailf:info "ID of the attachment circuit in the other end";
+      type uint16;
+      mandatory true;
+    }
+  }
+}

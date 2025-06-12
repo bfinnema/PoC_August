@@ -1,0 +1,98 @@
+module my_test {
+
+  namespace "http://www.cisco.com/my_test";
+  prefix my_test;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  description
+    "Package description";
+
+  revision 2016-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  grouping interface {
+      leaf ipv4-address {
+         description 'leaf-description';
+         tailf:info 'leaf-info';
+         type inet:ipv4-address;
+      }
+  }
+  
+
+  list my_test {
+    description "Service description";
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint my_test-servicepoint;
+
+    // may replace this with other ways of refering to the devices.
+    leaf-list device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf vrf_name {
+        type string;
+    }
+    leaf leaf-name {
+       description 'leaf-description';
+       tailf:info 'leaf-info';
+       type type-name {
+       
+       }
+    }
+    list list-name {
+      description 'list-description';
+      tailf:info 'list-info';
+    
+      key name;
+      leaf name {
+        tailf:info 'Unique list key';
+        type string;
+      }
+    }
+
+    tailf:action self-test {
+      tailf:info "Perform self-test of the service";
+      tailf:actionpoint my_test-self-test;
+      output {
+        leaf success {
+          type boolean;
+        }
+        leaf message {
+          type string;
+          description
+            "Free format message.";
+        }
+      }
+    }
+
+    // replace with your own stuff here
+    leaf value {
+      type inet:ipv4-address;
+    }
+  }
+}

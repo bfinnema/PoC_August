@@ -1,0 +1,9 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <infra_mpls_rfs xmlns="http://example.com/infra_mpls_rfs">
+    <name>{$mpls_rfs_name}</name>
+    <device>{$device}</device>
+    <router_id>{$loopback0_ipv4_address}</router_id>
+    <interface_name>{$interface_name}</interface_name>
+    <interface_number>{$interface_number}</interface_number>
+  </infra_mpls_rfs>
+</config-template>

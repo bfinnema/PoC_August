@@ -1,0 +1,109 @@
+module gc_poc_l3 {
+
+  namespace "http://example.com/gc_poc_l3";
+  prefix gc_poc_l3;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "L3VPN service for GC Pilot";
+
+  revision 2024-08-19 {
+    description
+      "Initial revision.";
+  }
+
+  container global-connect {
+    container l3vpns {
+      list l3vpn {
+        description "This is an RFS skeleton service";
+
+        key underlay-id;
+        leaf underlay-id {
+          tailf:info "Unique service id";
+          tailf:cli-allow-range;
+          type string;
+        }
+
+        uses ncs:service-data;
+        ncs:servicepoint gc_poc_l3-servicepoint;
+
+        leaf vrf-name {
+          tailf:info "Name of the VRF";
+          type string;
+        }
+
+        leaf customer-name {
+          tailf:info "Name of the L3VPN customer";
+          type string;
+        }
+
+        leaf customer-address {
+          tailf:info "Address of the L3VPN customer";
+          type string;
+        }
+
+        container link {
+          container routing {
+            container bgp {
+              leaf remote-as {
+                tailf:info "The AS number of the customer";
+                type uint32;
+              }
+            }
+          }
+          container qos {
+            container bandwidth {
+              leaf upload {
+                tailf:info "Uplink Bandwidth in Mbps.";
+                type uint16;
+              }
+              leaf download {
+                tailf:info "Downlink Bandwidth in Mbps.";
+                type uint16;
+              }
+            }
+          }
+          container pe {
+            leaf device {
+              tailf:info "The PE device eg kbhv51me14dk";
+              type leafref {
+                path "/ncs:devices/ncs:device/ncs:name";
+              }
+            }
+            leaf interface {
+              tailf:info "The PE interface to the CE eg GigabitEthernet0/0/0/25";
+              type string;
+            }
+            container ipv4 {
+              leaf mtu-size {
+                tailf:info "MTU size";
+                type uint16;
+              }
+              leaf ip-prefix {
+                tailf:info "IP Prefix eg 5.179.88.28/31";
+                type string;
+              }
+            }
+          }
+          container ce {
+            container uplink {
+              leaf ip {
+                tailf:info "IP address of the CE uplink";
+                type inet:ipv4-address;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
