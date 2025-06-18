@@ -170,7 +170,8 @@
                   </address-families>
                   <neighbors>
                     <neighbor>
-                      <neighbor-address>{/neighbor_ip_address}</neighbor-address>
+                      <!-- <neighbor-address>{/neighbor_ip_address}</neighbor-address> USED IN NSO 6.2.4 -->
+                      <address>{/neighbor_ip_address}</address> <!-- USED in NSO 6.5 -->
                       <address-families>
                         <address-family>
                           <af-name>ipv4-unicast</af-name>
