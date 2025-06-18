@@ -4,7 +4,7 @@
       <name>{/device}</name>
       <config>
         <!-- IOS-XE NETCONF NED section -->
-        <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE">
+        <!-- <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE">
           <interface>
             <?if {starts-with(/interface/interface_name,'Gigabit')}?>
             <GigabitEthernet>
@@ -68,7 +68,7 @@
               </address-family>
             </bgp>
           </router>
-        </native>
+        </native> -->
         <!-- Section End -->
 
         <!-- IOS-XE CLI NED section -->

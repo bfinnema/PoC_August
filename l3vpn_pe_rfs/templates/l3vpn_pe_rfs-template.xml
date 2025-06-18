@@ -189,7 +189,8 @@
             </as>
           </bgp>
         </router>
-        <vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-vrf-cfg">
+        <!-- FOR NSO 6.2.4 XR NC NED: -->
+        <!-- <vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-vrf-cfg">
           <vrf>
             <vrf-name>{/vrf_name}</vrf-name>
             <address-family>
@@ -224,6 +225,45 @@
               <two-byte-as>
                 <as-number>{/remote_as_number}</as-number>
                 <index>1</index>
+              </two-byte-as>
+            </rd>
+          </vrf>
+        </vrfs> -->
+        <vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-vrf-cfg">
+          <vrf>
+            <vrf-name>{/vrf_name}</vrf-name>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <import xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+                    <route-target>
+                      <two-byte-as-route-targets>
+                        <two-byte-as-route-target>
+                          <two-byte-as-number>{/remote_as_number}</two-byte-as-number>
+                          <asn2-index>1</asn2-index>
+                          <stitching>enable</stitching>
+                        </two-byte-as-route-target>
+                      </two-byte-as-route-targets>
+                    </route-target>
+                  </import>
+                  <export xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+                    <route-target>
+                      <two-byte-as-route-targets>
+                        <two-byte-as-route-target>
+                          <two-byte-as-number>{/remote_as_number}</two-byte-as-number>
+                          <asn2-index>1</asn2-index>
+                          <stitching>enable</stitching>
+                        </two-byte-as-route-target>
+                      </two-byte-as-route-targets>
+                    </route-target>
+                  </export>
+                </unicast>
+              </ipv4>
+            </address-family>
+            <rd xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg">
+              <two-byte-as>
+                <two-byte-as-number>{/remote_as_number}</two-byte-as-number>
+                <asn2-index>1</asn2-index>
               </two-byte-as>
             </rd>
           </vrf>
