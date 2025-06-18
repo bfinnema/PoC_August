@@ -409,7 +409,7 @@
         <!-- End of section -->
 
         <!-- IOS-XE NETCONF NED section -->
-        <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+        <!-- <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
           <vrf>
             <definition>
               <name>{/vrf_name}</name>
@@ -477,7 +477,7 @@
               </address-family>
             </bgp>
           </router>
-        </native>
+        </native> -->
         <!-- End of section -->
 
       </config>
